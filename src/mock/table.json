@@ -1,0 +1,29 @@
+[
+    {
+        "id": "7902537C",
+        "video": "VIDEO_1530174538220",
+        "camera": "webcam2",
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 4,
+        "type": "videoplayer"
+    },
+    {
+        "id": "ED0007EE",
+        "texts": "aaaa\nbbbb\ncccc",
+        "x": 0,
+        "y": 4,
+        "width": 12,
+        "height": 1,
+        "type": "textloop"
+    },
+    {
+        "id": "B88B7E84",
+        "x": 0,
+        "y": 5,
+        "width": 12,
+        "height": 3,
+        "type": "imageloop"
+    }
+]

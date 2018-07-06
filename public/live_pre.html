@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>鸿天科技 - 广告机直播系统</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540001" width="100%" height="257.4px">
+        <param name="movie" value="vgaplayer.swf">
+        <param id="swfobjecturl" name="FlashVars">
+        <!-- <param id="swfobjecturl" name="FlashVars" value="url=rtmp://116.62.150.38:1935/live/webcam"> -->
+        <param name="play" value="true">
+        <param name="loop" value="true">
+        <param name="bgcolor" value="#ffffff">
+        <embed id="swfobjectembed" src="vgaplayer.swf" width="100%" height="257.4px" allowscriptaccess="sameDomain" loop="loop" bgcolor="#ffffff"
+            allowfullscreen="true" type="application/x-shockwave-flash" flashvars="url=rtmp://116.62.150.38:1935/live/webcam"
+            pluginspage="https://get.adobe.com/cn/flashplayer/">
+    </object>
+
+    <script>
+
+        var getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        };
+
+        window.onload = function () {
+            var _name = getUrlParam("name");
+            var liveurl = "rtmp://116.62.150.38:1935/live/" + _name;
+            console.log(liveurl);
+
+            document.getElementById("swfobjecturl").value = "url=" + liveurl;
+
+            document.getElementById("swfobjectembed").flashvars = "url=" + liveurl;
+
+        }
+    </script>
+</body>
+
+</html>
