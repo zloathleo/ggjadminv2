@@ -3,19 +3,16 @@
   <main id="main-container">
 
     <div class="content">
-      <MainNavTabsContent />
+      <!-- <MainNavTabsContent /> -->
+      <router-view></router-view>
     </div>
 
   </main>
   <!-- END Main Container -->
 </template>
 
-<script>   
-import MainNavTabsContent from './MainNavTabsContent.vue';
+<script>    
 export default {
-  name: 'MainContent',
-  components: { MainNavTabsContent },
-
 }
 </script>
  

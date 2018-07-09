@@ -5,8 +5,9 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: {
+    login: ["babel-polyfill", './src/login.js'],
     index: ["babel-polyfill", './src/index.js'],
-    // index: './src/index.js',
+    // operater: ["babel-polyfill", './src/operater.js'], 
   },
   //ES6 pack成 ES5
   output: {
@@ -15,7 +16,7 @@ module.exports = {
   },
 
   externals: {
-    // "vue": 'vue'
+    'vue': 'Vue',  
   },
 
   resolve: {

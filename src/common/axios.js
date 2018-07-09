@@ -1,7 +1,8 @@
 //引入axios
-import axios from 'axios'
+import axios from 'axios' 
+import constant from './constant';
 
-axios.defaults.baseURL = 'http://116.62.150.38:8080/ggmanager/';
+axios.defaults.baseURL = constant.serverPath;
 //设置默认请求头
 axios.defaults.headers = {
     'X-Requested-With': 'XMLHttpRequest',
@@ -59,7 +60,9 @@ axios.interceptors.response.use(function (response) {
         }
         return Promise.reject(err);
     })
-
-
+ 
+//数据模拟
+import mock from './mock';
+mock.init(axios);
 
 export default axios;

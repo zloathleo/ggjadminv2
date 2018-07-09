@@ -13,10 +13,20 @@
     height: 100%;
 }
 
-.loginbg {
-    background-position: 0 50%;
-    -webkit-background-size: cover;
-    background-size: cover;
-    height: 100%; 
-    background-repeat: no-repeat;
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.block-title {
+    font-size: 18px;
+    margin-top: 8px;
+    margin-left: 8px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: #FFF;
 }

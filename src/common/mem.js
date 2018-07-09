@@ -6,7 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        isLogin: false,
+        user: undefined,//type token
 
         modal_message_title: '标题',
         modal_message_content: '内容',
@@ -29,8 +29,8 @@ export default new Vuex.Store({
         gridStackAllItemCustomProperties: new Map(),
     },
     mutations: {
-        changeLogin: function (state, value) {
-            state.isLogin = value;
+        setUser: function (state, value) {
+            state.user = value;
         },
         changeModalMessage: function (state, value) {
             state.modal_message_title = value.title;

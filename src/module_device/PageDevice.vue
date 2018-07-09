@@ -49,8 +49,7 @@
     </div>
 </template>
 
-<script>     
-var deviceList = require('../mock/device.json');
+<script>      
 import DeviceItem from './DeviceItem.vue';
 export default {
     components: { DeviceItem },
