@@ -26,18 +26,6 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">维护分组
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-md-6">
-                                    <select class="form-control">
-                                        <option value="1">一号分组</option>
-                                        <option value="2">二号分组</option>
-                                    </select>
-                                </div>
-                            </div> -->
-
                         </form>
                     </div>
                 </div>
@@ -68,18 +56,14 @@ export default {
     methods: {
 
         ok: function () {
-            // var params = new URLSearchParams();
-            // params.append('label', this.$refs.inputName.value);
+            let _label = this.editData.itemLabel; 
+            let _this = this;
+            this.$axios.post('users/' + _label + '/reset').then(function (response) {
+                toastr.success("用户密码重置成功");
+            }).catch(function (error) {
+                toastr.error("用户密码重置异常 [" + error + "]");
+            });
 
-            // let _this = this;
-            // this.$axios.post('zygl/zb/add', params).then(function (response) { 
-
-            //     _this.$eventHub.$emit('addLiveDone');
-
-            // }).catch(function (error) {
-
-            // });
-            toastr.success("用户密码重置成功");
         }
     }
 }

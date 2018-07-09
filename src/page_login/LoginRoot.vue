@@ -41,19 +41,19 @@ export default {
 
       if (un && pw) {
 
-        const url = '/users/' + un + '/login';
+        const url = '/account/login';
         var params = new URLSearchParams();
+        params.append('name', un);
         params.append('password', pw);
         this.$axios({
           method: 'post',
           url: url,
           data: params
         }).then((res) => {
-          console.log(res.data);
-
           Storejs.set("user", res.data);
-
           window.location.href = "index.html";
+        }).catch(function (error) { 
+          toastr.error("登录异常 [" + error + "]"); 
         });
       }
     },

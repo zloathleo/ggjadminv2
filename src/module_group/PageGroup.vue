@@ -2,6 +2,7 @@
     <div class="block">
         <GroupAdd />
         <GroupEdit ref="modalEdit" />
+        <GroupDelete ref="modalDelete" />
         <div class="block-header">
             <div class="block-options-simple">
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
@@ -46,7 +47,7 @@
                         </td>
                         <td class="text-center">
                             <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item.label)">编辑</button>
-                            <button class="btn btn-xs btn-danger" type="button">删除</button>
+                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item.label)">删除</button>
                         </td>
                     </tr>
                 </tbody>
@@ -58,8 +59,9 @@
 <script>       
 import GroupAdd from './GroupAdd.vue';
 import GroupEdit from './GroupEdit.vue';
+import GroupDelete from './GroupDelete.vue';
 export default {
-    components: { GroupAdd, GroupEdit },
+    components: { GroupAdd, GroupEdit, GroupDelete },
     data: function () {
         return {
             loadedTableData: false,//ui初次更新
@@ -101,16 +103,14 @@ export default {
             this.refreshTableData();
         },
         refreshTableData: function () {
-            //更新按钮操作
             let _this = this;
             this.$axios.get('/groups').then(function (response) {
                 let _data = response.data;
-                console.log(_data);
                 if (_data) {
                     _this.tableData = _data.rows;
                 }
             }).catch(function (error) {
-                console.log(error);
+                toastr.error("获取表格异常 [" + error + "]");
             });
         },
         addItem: function () {
@@ -122,6 +122,18 @@ export default {
             let _jqModal = $('#modal-item-edit');
             _jqModal.on('show.bs.modal', function (_event) {
                 let _modal = _this.$refs.modalEdit;
+                _modal.editData = {
+                    itemLabel: _label
+                }
+            });
+            _jqModal.modal('show');
+        },
+        deleteItem: function (_label) {
+            let _this = this;
+
+            let _jqModal = $('#modal-item-delete');
+            _jqModal.on('show.bs.modal', function (_event) {
+                let _modal = _this.$refs.modalDelete;
                 _modal.editData = {
                     itemLabel: _label
                 }

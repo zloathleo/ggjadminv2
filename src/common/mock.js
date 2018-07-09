@@ -5,15 +5,20 @@ export default {
 
     init: function (_axios) {
         let mock = new MockAdapter(_axios);
-        mock.onPost('/users/admin/login').reply(200, {
+        mock.onPost('/account/login').reply(200, {
             token: '21232F297A57A5A743894A0E4A801FC3',
             type: 'admin'
         });
 
+        mock.onPost('/account/logout').reply(200, {
+            err: 1,
+        });
+
+        //////////group///////////
         mock.onGet('/groups').reply(200, Mock.mock({
             "rows|11-50": [
                 {
-                    label: /\d{10,10}/,
+                    label: 'group',
                     des: '一号分组',
                     type: 0,
                     width: 700,
@@ -24,16 +29,41 @@ export default {
             ]
         }));
 
+        mock.onPost('/groups/add').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/groups/group/update').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/groups/group/delete').reply(200, {
+            err: 1,
+        });
+
+         //////////user///////////
         mock.onGet('/users').reply(200, Mock.mock({
             "rows|11-50": [
                 {
-                    label: /\d{10,10}/,
-                    des: 'operater1', 
+                    label: 'username',
+                    des: 'operater1',
                     group: /\d{10,10}/,
                     updateTime: 0,
                 }
             ]
         }));
+
+        mock.onPost('/users/add').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/users/username/reset').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/users/username/delete').reply(200, {
+            err: 1,
+        });
     }
 }
 

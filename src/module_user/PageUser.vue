@@ -2,6 +2,7 @@
     <div class="block">
         <UserAdd />
         <UserEdit ref="modalEdit" />
+        <UserDelete ref="modalDelete" />
         <div class="block-header">
             <div class="block-options-simple">
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
@@ -17,7 +18,7 @@
             <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality initialized in js/pages/base_tables_datatables.js -->
             <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
-                    <tr> 
+                    <tr>
                         <th class="text-center">#</th>
                         <th class="text-center">用户名称</th>
                         <th class="text-center">维护分组</th>
@@ -25,7 +26,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in tableData"> 
+                    <tr v-for="(item, index) in tableData">
                         <td class="text-center">{{index + 1}}</td>
                         <td class="text-center">{{item.label}}</td>
                         <td class="text-center">{{item.group}}</td>
@@ -43,8 +44,9 @@
 <script>       
 import UserAdd from './UserAdd.vue';
 import UserEdit from './UserEdit.vue';
+import UserDelete from './UserDelete.vue';
 export default {
-    components: { UserAdd, UserEdit },
+    components: { UserAdd, UserEdit, UserDelete },
     data: function () {
         return {
             loadedTableData: false,//ui初次更新
@@ -61,7 +63,7 @@ export default {
 
             //定义搜索列
             _tableParam = Object.assign(_tableParam, {
-                "columns": [ 
+                "columns": [
                     { "searchable": false },
                     { "searchable": true },
                     { "searchable": true },
@@ -96,8 +98,7 @@ export default {
             $('#modal-item-add').modal('show');
         },
         editItem: function (_label) {
-            let _this = this;
-
+            let _this = this; 
             let _jqModal = $('#modal-item-edit');
             _jqModal.on('show.bs.modal', function (_event) {
                 let _modal = _this.$refs.modalEdit;
@@ -107,8 +108,16 @@ export default {
             });
             _jqModal.modal('show');
         },
-        deleteItem: function (_label) {
-
+        deleteItem: function (_label) {  
+            let _this = this; 
+            let _jqModal = $('#modal-item-delete');
+            _jqModal.on('show.bs.modal', function (_event) {
+                let _modal = _this.$refs.modalDelete;
+                _modal.editData = {
+                    itemLabel: _label
+                }
+            });
+            _jqModal.modal('show');
         },
         preview: function () {
 

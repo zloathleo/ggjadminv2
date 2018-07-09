@@ -26,6 +26,18 @@
                                 </div>
                             </div>
 
+                            <!-- <div class="form-group">
+                                <label class="col-md-4 control-label" for="val-skill">维护分组
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <select class="form-control">
+                                        <option value="1">一号分组</option>
+                                        <option value="2">二号分组</option>
+                                    </select>
+                                </div>
+                            </div> -->
+
                         </form>
                     </div>
                 </div>
@@ -53,24 +65,19 @@ export default {
     methods: {
 
         ok: function () {
+            // var params = new URLSearchParams();
+            // params.append('label', this.$refs.inputName.value);
 
-            let _label = this.$refs.inputName.value;
-            if (!_label.isBlank()) {
-                _label = _label.trim();
+            // let _this = this;
+            // this.$axios.post('zygl/zb/add', params).then(function (response) { 
 
-                var params = new URLSearchParams();
-                params.append('label', _label);
+            //     _this.$eventHub.$emit('addLiveDone');
 
-                let _this = this;
-                this.$axios.post('users/add', params).then(function (response) {
-                    toastr.success("添加用户成功");
-                }).catch(function (error) {
-                    toastr.error("添加用户异常 [" + error + "]");
-                });
-            } else {
-                toastr.error("用户名不合法或为空");
-            } 
+            // }).catch(function (error) {
 
+            // });
+
+            toastr.success("添加用户成功");
         }
     }
 }

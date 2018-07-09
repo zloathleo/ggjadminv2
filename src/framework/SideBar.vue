@@ -31,19 +31,38 @@
                             </a>
                         </li>
                     </ul>
-                    <ul v-if="$mem.state.user.type == 'operater'" class="nav-main">
-                        <li>
-                            <router-link :to="{name:'page_device'}">广告机管理</router-link>
+                    <ul v-if="$mem.state.user.type == 'operator'" class="nav-main">
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_device') }" v-on:click="clickItem('page_device')">
+                                <i class="si si-screen-tablet"></i>
+                                <span class="sidebar-mini-hide">广告机管理</span>
+                            </a>
                         </li>
-                        <li>
-                            <router-link :to="{name:'page_page'}">页面管理</router-link>
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_page') }" v-on:click="clickItem('page_page')">
+                                <i class="si si-film"></i>
+                                <span class="sidebar-mini-hide">页面管理</span>
+                            </a>
                         </li>
-                        <li>
-                            <router-link :to="{name:'page_live'}">直播视频</router-link>
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_resource') }" v-on:click="clickItem('page_resource')">
+                                <i class="si si-badge"></i>
+                                <span class="sidebar-mini-hide">资源管理</span>
+                            </a>
                         </li>
-                        <li>
-                            <router-link :to="{name:'page_resource'}">资源管理</router-link>
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_msg') }" v-on:click="clickItem('page_msg')">
+                                <i class="si si-bubbles"></i>
+                                <span class="sidebar-mini-hide">消息管理</span>
+                            </a>
                         </li>
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_live') }" v-on:click="clickItem('page_live')">
+                                <i class="si si-camcorder"></i>
+                                <span class="sidebar-mini-hide">直播管理</span>
+                            </a>
+                        </li> 
+                        
                     </ul>
                 </div>
                 <!-- END Side Content -->

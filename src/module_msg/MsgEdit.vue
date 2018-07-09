@@ -1,6 +1,6 @@
 <template>
 
-    <div class="modal fade" id="modal-item-add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="modal-item-edit" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="block block-themed block-transparent remove-margin-b">
@@ -12,7 +12,7 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">添加用户</div>
+                        <div class="modal-title">重置用户密码</div>
                     </div>
                     <div class="block-content">
                         <form class="form-horizontal">
@@ -22,9 +22,21 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
+                                    <input ref="inputName" class="js-maxlength form-control" type="text" :value="editData?editData.itemLabel:''" maxlength="20" disabled>
                                 </div>
                             </div>
+
+                            <!-- <div class="form-group">
+                                <label class="col-md-4 control-label" for="val-skill">维护分组
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <select class="form-control">
+                                        <option value="1">一号分组</option>
+                                        <option value="2">二号分组</option>
+                                    </select>
+                                </div>
+                            </div> -->
 
                         </form>
                     </div>
@@ -44,33 +56,30 @@
 
 export default {
     data: function () {
-        return { 
+        return {
+            editData: undefined
         }
-    }, 
-    mounted() { 
+    },
+
+    mounted() {
+
     },
 
     methods: {
 
         ok: function () {
+            // var params = new URLSearchParams();
+            // params.append('label', this.$refs.inputName.value);
 
-            let _label = this.$refs.inputName.value;
-            if (!_label.isBlank()) {
-                _label = _label.trim();
+            // let _this = this;
+            // this.$axios.post('zygl/zb/add', params).then(function (response) { 
 
-                var params = new URLSearchParams();
-                params.append('label', _label);
+            //     _this.$eventHub.$emit('addLiveDone');
 
-                let _this = this;
-                this.$axios.post('users/add', params).then(function (response) {
-                    toastr.success("添加用户成功");
-                }).catch(function (error) {
-                    toastr.error("添加用户异常 [" + error + "]");
-                });
-            } else {
-                toastr.error("用户名不合法或为空");
-            } 
+            // }).catch(function (error) {
 
+            // });
+            toastr.success("用户密码重置成功");
         }
     }
 }

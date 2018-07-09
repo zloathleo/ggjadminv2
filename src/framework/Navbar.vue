@@ -20,7 +20,6 @@
             </li>
         </ul>
         <!-- END Header Navigation Right -->
-
         <!-- Header Navigation Left -->
         <ul class="nav-header pull-left">
             <li class="">
@@ -40,8 +39,20 @@ export default {
     name: 'Navbar',
     methods: {
         logout: function () {
+
             Storejs.remove('user');
-            window.location.href = "login.html";
+
+            const url = '/account/logout';
+            this.$axios({
+                method: 'post',
+                url: url
+            }).then((res) => {
+                window.location.href = "login.html";
+            }).catch(function (error) {
+                toastr.error("退出异常");
+                window.location.href = "login.html"; 
+            });
+
         },
     }
 }
