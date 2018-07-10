@@ -12,35 +12,17 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">修改消息</div>
+                        <div class="modal-title">重置用户密码</div>
                     </div>
                     <div class="block-content">
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">消息内容
+                                <label class="col-md-4 control-label" for="example-maxlength1">用户名称
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-md-6">
                                     <input ref="inputName" class="js-maxlength form-control" type="text" :value="editData?editData.itemLabel:''" maxlength="20" disabled>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">生效时间
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-xs-6">
-                                    <input ref="inputBeginTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">结束时间
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-xs-6">
-                                    <input ref="inputEndTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
                                 </div>
                             </div>
 
@@ -65,13 +47,23 @@ export default {
         return {
             editData: undefined
         }
-    }, 
-    mounted() { 
     },
 
-    methods: { 
-        ok: function () { 
-            toastr.success("用户密码重置成功");
+    mounted() {
+
+    },
+
+    methods: {
+
+        ok: function () {
+            let _label = this.editData.itemLabel; 
+            let _this = this;
+            this.$axios.post('users/' + _label + '/reset').then(function (response) {
+                toastr.success("用户密码重置成功");
+            }).catch(function (error) {
+                toastr.error("用户密码重置异常 [" + error + "]");
+            });
+
         }
     }
 }

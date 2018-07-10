@@ -12,35 +12,17 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">添加消息</div>
+                        <div class="modal-title">添加用户</div>
                     </div>
                     <div class="block-content">
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">消息内容
+                                <label class="col-md-4 control-label" for="example-maxlength1">用户名称
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-xs-6">
+                                <div class="col-md-6">
                                     <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">生效时间
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-xs-6">
-                                    <input ref="inputBeginTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">结束时间
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-xs-6">
-                                    <input ref="inputEndTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
                                 </div>
                             </div>
 
@@ -58,18 +40,37 @@
 
 </template>
 
-<script>    
+<script>   
+
 export default {
     data: function () {
-        return {
+        return { 
         }
-    },
-    mounted() {
+    }, 
+    mounted() { 
     },
 
     methods: {
+
         ok: function () {
-            toastr.success("添加用户成功");
+
+            let _label = this.$refs.inputName.value;
+            if (!_label.isBlank()) {
+                _label = _label.trim();
+
+                var params = new URLSearchParams();
+                params.append('label', _label);
+
+                let _this = this;
+                this.$axios.post('users/add', params).then(function (response) {
+                    toastr.success("添加用户成功");
+                }).catch(function (error) {
+                    toastr.error("添加用户异常 [" + error + "]");
+                });
+            } else {
+                toastr.error("用户名不合法或为空");
+            } 
+
         }
     }
 }
