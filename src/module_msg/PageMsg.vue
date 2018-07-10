@@ -19,6 +19,7 @@
             <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
                     <tr>
+                        <th class="text-center hidden">隐藏ID</th>
                         <th class="text-center">#</th>
                         <th class="text-center">消息内容</th>
                         <th class="text-center">生效时间</th>
@@ -29,11 +30,12 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in tableData">
+                        <td class="text-center hidden">{{item.label}}</td>
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center">{{item.label}}</td>
-                        <td class="text-center">{{$constant.parseDateTime(item.activeTime)}}</td>
+                        <td class="text-center">{{item.content}}</td>
+                        <td class="text-center">{{$constant.parseDateTime(item.beginTime)}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.endTime)}}</td>
-                        <td class="text-center">{{item.status}}</td>
+                        <td class="text-center">{{$constant.parseMsgState(item.status)}}</td>
                         <td class="text-center">
                             <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item.label)">编辑</button>
                             <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item.label)">删除</button>
@@ -69,6 +71,7 @@ export default {
             _tableParam = Object.assign(_tableParam, {
                 "columns": [
                     { "searchable": false },
+                    { "searchable": false },
                     { "searchable": true },
                     { "searchable": false },
                     { "searchable": false },
@@ -89,12 +92,10 @@ export default {
         refreshTableData: function () {
             //更新按钮操作
             let _this = this;
-            this.$axios.get('/groups/{label}/messages').then(function (response) {
+            this.$axios.get('/messages').then(function (response) {
                 let _data = response.data;
-                console.log(_data);
                 if (_data) {
                     _this.tableData = _data.rows;
-                    toastr.success("获取表格数据");
                 }
             }).catch(function (error) {
                 toastr.error("获取表格数据异常 [" + error + "]");

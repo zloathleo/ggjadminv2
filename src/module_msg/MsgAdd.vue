@@ -18,7 +18,7 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">用户名称
+                                <label class="col-md-4 control-label" for="example-maxlength1">消息内容
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-md-6">
@@ -26,17 +26,25 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">维护分组
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="example-maxlength1">生效时间
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <select class="form-control">
-                                        <option value="1">一号分组</option>
-                                        <option value="2">二号分组</option>
-                                    </select>
+                                    <input ref="inputBeginTime" class="js-maxlength form-control" type="text" maxlength="20">
                                 </div>
-                            </div> -->
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="example-maxlength1">结束时间
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="js-datetimepicker input-group date" data-show-today-button="true" data-show-clear="true" data-show-close="true" data-side-by-side="true">
+                                        <input ref="inputEndTime" class="form-control" type="text" placeholder="选择时间" readonly>
+                                     </div>
+                                </div>
+                            </div>
 
                         </form>
                     </div>
@@ -52,31 +60,17 @@
 
 </template>
 
-<script>   
-
-export default {
+<script>    
+export default { 
     data: function () {
-        return { 
+        return {
         }
-    }, 
+    },
     mounted() { 
     },
 
-    methods: {
-
-        ok: function () {
-            // var params = new URLSearchParams();
-            // params.append('label', this.$refs.inputName.value);
-
-            // let _this = this;
-            // this.$axios.post('zygl/zb/add', params).then(function (response) { 
-
-            //     _this.$eventHub.$emit('addLiveDone');
-
-            // }).catch(function (error) {
-
-            // });
-
+    methods: { 
+        ok: function () {  
             toastr.success("添加用户成功");
         }
     }

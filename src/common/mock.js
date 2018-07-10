@@ -7,7 +7,7 @@ export default {
         let mock = new MockAdapter(_axios);
         mock.onPost('/account/login').reply(200, {
             token: '21232F297A57A5A743894A0E4A801FC3',
-            type: 'admin'
+            type: 'operator'
         });
 
         mock.onPost('/account/logout').reply(200, {
@@ -41,7 +41,7 @@ export default {
             err: 1,
         });
 
-         //////////user///////////
+        //////////user///////////
         mock.onGet('/users').reply(200, Mock.mock({
             "rows|11-50": [
                 {
@@ -62,6 +62,32 @@ export default {
         });
 
         mock.onPost('/users/username/delete').reply(200, {
+            err: 1,
+        });
+
+        //////////messages///////////
+        mock.onGet('/messages').reply(200, Mock.mock({
+            "rows|11-50": [
+                {
+                    label: 'msg',
+                    content: /\d{10,10}/,
+                    beginTime: 0,
+                    endTime: 0,
+                    status: 1,
+                    updateTime: 0,
+                }
+            ]
+        }));
+
+        mock.onPost('/messages/add').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/messages/msg/reset').reply(200, {
+            err: 1,
+        });
+
+        mock.onPost('/messages/msg/delete').reply(200, {
             err: 1,
         });
     }

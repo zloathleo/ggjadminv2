@@ -5,6 +5,17 @@ export default {
         var _d = new Date(_long).Format("yyyy-MM-dd HH:mm:ss");
         return _d;
     },
+
+    parseMsgState: function (_s) {
+        if (_s === 1) {
+            return "正在播放";
+        } else if (_s === -1) {
+            return "已播放";
+        } else {
+            return "准备播放";
+        }
+        return _d;
+    },
     newDataTableOptions: function () {
         return {
             ordering: false,
