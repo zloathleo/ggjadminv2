@@ -1,6 +1,6 @@
 <template>
     <div class="block">
-
+        <PageDelete ref="modalDelete" />
         <div class="block-header">
             <div class="block-options-simple">
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
@@ -40,7 +40,8 @@
                             <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除 </button>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-xs btn-success" type="button" v-on:click="publicItem(item)">激活 </button>
+                            <button v-if="item.active != true" class="btn btn-xs btn-warning" type="button" v-on:click="publicItem(item)">激活 </button>
+                            <span v-if="item.active == true" class="label label-success">已激活</span>
                         </td>
                     </tr>
                 </tbody>
@@ -50,8 +51,10 @@
 </template>
 
 <script>     
+
+import PageDelete from './PageDelete.vue';
 export default {
-    components: {},
+    components: { PageDelete },
     data: function () {
         return {
             loadedTableData: false,//ui初次更新
@@ -64,6 +67,13 @@ export default {
         let _this = this;
         this.$eventHub.$on('pages.updated', function (data) {
             setTimeout(function () { location.reload(); }, 500);
+        });
+        this.$axios.get('/account/info').then(function (response) { 
+            let _info = response.data.group;
+            _this.$mem.state.groupInfo.width = _info.width;
+            _this.$mem.state.groupInfo.height = _info.height;  
+        }).catch(function (error) {
+            toastr.error("获取初始化数据异常 [" + _this.$constant.parseError(error) + "]");
         });
     },
     updated: function () {
@@ -82,7 +92,7 @@ export default {
                 ]
             });
             _tableParam.language.searchPlaceholder = '页面名称';
-            jQuery('#module_device_table').dataTable(_tableParam);
+            jQuery('#module_page_table').dataTable(_tableParam);
             this.loadedTableData = true;
         }
     },
@@ -114,13 +124,20 @@ export default {
             this.$router.push({ name: 'page_page_update', params: { label: item.label } });
         },
         deleteItem: function (item) {
-            // this.$refs.modalDelete.setItem({
-            //     label: item.label,
-            //     name: item.name,
-            // });
-            // $('#modal-item-delete').modal('show');
+            this.$refs.modalDelete.setItem({
+                label: item.label,
+                name: item.name,
+            });
+            $('#modal-item-delete').modal('show');
         },
         publicItem: function (item) {
+            let _this = this;
+            this.$axios.post('pages/' + item.label + '/publish').then(function (response) {
+                toastr.success("发布页面成功");
+                _this.$eventHub.$emit('pages.updated');
+            }).catch(function (error) {
+                toastr.error("发布页面异常 [" + error + "]");
+            });
         },
     }
 

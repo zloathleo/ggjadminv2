@@ -12,11 +12,6 @@
                         <button type="button" class="btn btn-xs btn-primary" v-on:click="addVideoPlayer">
                             <i class="fa fa-plus"></i> 视频源 </button>
 
-                        <!-- <button type="button" class="btn btn-xs btn-warning" v-on:click="addImage">
-                            <i class="fa fa-plus"></i> 添加图片 </button>
-                        <button type="button" class="btn btn-xs btn-warning" v-on:click="addText">
-                            <i class="fa fa-plus"></i> 添加文字 </button> -->
-
                         <button type="button" class="btn btn-xs btn-warning" v-on:click="addImageLoop">
                             <i class="fa fa-plus"></i> 图片轮播 </button>
                         <button type="button" class="btn btn-xs btn-warning" v-on:click="addTextLoop">
@@ -25,13 +20,13 @@
                         <button type="button" class="btn btn-xs btn-success" v-on:click="save">
                             <i class="fa fa-check"></i> 保存 </button>
                     </div>
-                    <h3 class="block-title">{{initPageData.name}} - 布局</h3>
+                    <h3 class="block-title">{{initPageData.name ? initPageData.name :'新页面' }} - 布局</h3>
                 </div>
 
-                <div class="block-content">
-                    <div id="pageCreater" class="grid-stack" style="margin-bottom: 20px;">
-
-                    </div>
+                <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 20px',width: maxWidth + 'px', height: (maxHeight - 93) + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
+                    <!-- <div :style="{ width: maxWidth + 'px', height: (maxHeight - 100) + 'px' } " /> -->
+                   
+                    <div id="pageCreater" class="grid-stack" />
                 </div>
             </div>
         </div>
@@ -49,8 +44,18 @@ import PageSave from './PageSave.vue';
 export default {
     components: { PagePagePropertyPane, PageSave },
     data: function () {
+        let _targetWidth = this.$mem.state.groupInfo.width;
+        let _targetHeight = this.$mem.state.groupInfo.height;
+
+        let _windowHeight = document.body.clientHeight - 140;
+        let _windowWidth = parseInt(_windowHeight * _targetWidth / _targetHeight);
+
+        console.log(_windowWidth + "::" + _windowHeight);
+
         return {
-            initPageData: {}
+            initPageData: {},
+            maxWidth: _windowWidth,
+            maxHeight: _windowHeight,
         }
     },
     beforeCreate() {
@@ -65,17 +70,11 @@ export default {
     mounted() {
         this.initGridStack();
 
-        let _name = this.$route.params.name;
-        if (_name) {
-            //update
-            // this.$mem.commit("changeGridStackPageName", _label)
-            this.loadPageData(_name);
+        let _label = this.$route.params.label;
+        if (_label) {
+            this.loadPageData(_label);
         } else {
-            //create
-            // this.$mem.commit("changeGridStackPageName", "page-" + this.uuid(8, 16));
-
         }
-        // setInterval(this.itemSelectChange, 1000);
 
         let _this = this;
         this.$eventHub.$on('gridStackSelectItemChange', function (data) {
@@ -88,6 +87,7 @@ export default {
             this.$axios.get('pages/' + _label)
                 .then(function (response) {
                     _this.initPageData = response.data;
+                    _this.initPageData.update = true;
                     _this.renderPageData(response.data);
                 })
                 .catch(function (error) {
@@ -96,6 +96,9 @@ export default {
         },
         renderPageData: function (_data) {
             let _content = _data.content;
+            if(!_content){
+                return;
+            }
             let _json = JSON.parse(_content);
 
             var items = GridStackUI.Utils.sort(_json);
@@ -103,7 +106,7 @@ export default {
             var gridstack = $('#pageCreater').data('gridstack');
             items.forEach(item => {
                 if (item.type == "videoplayer") {
-                    gridstack.addWidget($('<div data-type="videoplayer" data-id="' + item.id + '" data-gs-min-width="4" data-gs-min-height="3"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(1)" class="btn btn-minw btn-primary grid-stack-item-content-button" >视频源</label></div></div>'),
+                    gridstack.addWidget($('<div data-type="videoplayer" data-id="' + item.id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视</label></div></div>'),
                         item.x, item.y, item.width, item.height, false);
                     _this.$mem.commit("appendGridStackItemCustomProperties", {
                         "id": item.id,
@@ -111,21 +114,20 @@ export default {
                         "camera": item.camera,
                     });
                 } else if (item.type == "imageloop") {
-                    gridstack.addWidget($('<div data-type="imageloop" data-id="' + item.id + '" data-gs-min-width="4" data-gs-min-height="3"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(4)" class="btn btn-minw btn-primary grid-stack-item-content-button" >图片轮播</label></div></div>'),
+                    gridstack.addWidget($('<div data-type="imageloop" data-id="' + item.id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图</label></div></div>'),
                         item.x, item.y, item.width, item.height, false);
                     _this.$mem.commit("appendGridStackItemCustomProperties", {
                         "id": item.id,
                     });
                 } else if (item.type == "textloop") {
-                    gridstack.addWidget($('<div data-type="textloop" data-id="' + item.id + '" data-gs-min-width="4" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(5)" class="btn btn-minw btn-primary grid-stack-item-content-button" >文字轮播</label></div></div>'),
+                    gridstack.addWidget($('<div data-type="textloop" data-id="' + item.id + '" data-gs-min-width="2" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content" > <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文</label></div></div>'),
                         item.x, item.y, item.width, item.height, false);
                     _this.$mem.commit("appendGridStackItemCustomProperties", {
                         "id": item.id,
                         "texts": item.texts
                     });
                 }
-            });
-            console.log(items);
+            }); 
         },
         itemSelectChange: function (data) {
             //dom   type 
@@ -141,21 +143,20 @@ export default {
         },
 
         initGridStack: function () {
-            // jQuery('#pageCreater').gridstack();
+            let _h = 10;
+            let _w = 12; 
 
             var options = {
                 float: true,
-                alwaysShowResizeHandle: true,
-                height: 10,
-                width: 12,
-                cellHeight: parseInt((document.body.clientHeight - 210) / 10),
+                // alwaysShowResizeHandle: true,
+                height: _h,
+                width: _w,
+                // minWidth: this.maxWidth,
+                cellHeight: Math.floor(this.maxHeight / 10) - 10,
                 verticalMargin: "1px",
                 // disableOneColumnMode :false,
             };
-
-            let _pageCreater = $('#pageCreater');
-            _pageCreater.gridstack(options);
-
+            $('#pageCreater').gridstack(options);
         },
 
         save: function () {
@@ -183,13 +184,9 @@ export default {
 
                 let _json = JSON.stringify(_allComponents, null, '    ');
 
-                console.log(_json);
+                console.log(_json);  
 
-                // this.$mem.commit("changeModalMessage", {
-                //     "title": "保存结果",
-                //     "content": _json,
-                // });
-
+                this.initPageData.content = _json;
 
                 this.$refs.modalSave.setItem(this.initPageData);
                 $('#modal-pagesave').modal('show');
@@ -199,32 +196,20 @@ export default {
         addVideoPlayer: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
-            gridstack.addWidget($('<div data-type="videoplayer" data-id="' + _id + '" data-gs-min-width="4" data-gs-min-height="3"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(1)" class="btn btn-minw btn-primary grid-stack-item-content-button" >视频源</label></div></div>'),
-                0, 0, 4, 3, true);
+            gridstack.addWidget($('<div data-type="videoplayer" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视</label></div></div>'),
+                0, 0, 2, 2, true);
         },
-        // addImage: function () {
-        //     var gridstack = $('#pageCreater').data('gridstack');
-        //     let _id = this.$constant.uuid(8, 16);
-        //     gridstack.addWidget($('<div data-type="image" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(2)" class="btn btn-minw btn-primary grid-stack-item-content-button" >图片</label></div></div>'),
-        //         0, 0, 2, 2, true);
-        // },
-        // addText: function () {
-        //     var gridstack = $('#pageCreater').data('gridstack');
-        //     let _id = this.$constant.uuid(8, 16);
-        //     gridstack.addWidget($('<div data-type="text" data-id="' + _id + '" data-gs-min-width="4" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(3)" class="btn btn-minw btn-primary grid-stack-item-content-button" >文字</label></div></div>'),
-        //         0, 0, 4, 1, true);
-        // },
         addImageLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
-            gridstack.addWidget($('<div data-type="imageloop" data-id="' + _id + '" data-gs-min-width="4" data-gs-min-height="3"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(4)" class="btn btn-minw btn-primary grid-stack-item-content-button" >图片轮播</label></div></div>'),
-                0, 0, 4, 3, true);
+            gridstack.addWidget($('<div data-type="imageloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图</label></div></div>'),
+                0, 0, 2, 2, true);
         },
         addTextLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
-            gridstack.addWidget($('<div data-type="textloop" data-id="' + _id + '" data-gs-min-width="4" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label onclick="gridStackSelectItemCallback(5)" class="btn btn-minw btn-primary grid-stack-item-content-button" >文字轮播</label></div></div>'),
-                0, 0, 4, 1, true);
+            gridstack.addWidget($('<div data-type="textloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content" > <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文</label></div></div>'),
+                0, 0, 2, 1, true);
         },
     }
 

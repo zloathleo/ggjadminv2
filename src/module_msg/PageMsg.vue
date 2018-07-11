@@ -15,7 +15,7 @@
         </div>
 
         <div class="block-content">
-            <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
+            <table id="module_msg_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
                     <tr>
                         <th class="text-center">#</th>
@@ -64,6 +64,7 @@ export default {
         this.$eventHub.$on('messages.updated', function (data) {
             setTimeout(function () { location.reload(); }, 500);
         });
+        App.initDatetimepicker();
     },
     updated: function () {
         if (!this.loadedTableData) {
@@ -82,7 +83,7 @@ export default {
                 ]
             });
             _tableParam.language.searchPlaceholder = '内容';
-            jQuery('#module_device_table').dataTable(_tableParam);
+            jQuery('#module_msg_table').dataTable(_tableParam);
             this.loadedTableData = true;
         }
     },

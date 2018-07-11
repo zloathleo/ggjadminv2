@@ -163,13 +163,13 @@ var App = function () {
             $input.datetimepicker({
                 // language: 'zh-CN',
                 // autoclose: true,
-                format: 'YYYY-MM-DD hh:mm:ss' ,
+                format: 'YYYY-MM-DD HH:mm:ss',
                 // useCurrent: $input.data('use-current') ? $input.data('use-current') : false,
                 locale: moment.locale('zh-cn'),
                 showTodayButton: true,
                 showClear: true,
                 showClose: true,
-                sideBySide: true,
+                sideBySide: true, 
                 inline: false,
                 icons: {
                     time: 'si si-clock',
@@ -191,6 +191,9 @@ var App = function () {
             uiInit();
             uiLayout();
             uiNav();
+        },
+
+        initDatetimepicker: function ($func) {
             uiHelperDatetimepicker();
         },
     };

@@ -16,7 +16,7 @@
 
         <div class="block-content">
             <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality initialized in js/pages/base_tables_datatables.js -->
-            <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
+            <table id="module_group_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
                     <tr> 
                         <th class="text-center">#</th>
@@ -92,7 +92,7 @@ export default {
                 ]
             });
             _tableParam.language.searchPlaceholder = '名称/维护人员'; 
-            jQuery('#module_device_table').dataTable(_tableParam);
+            jQuery('#module_group_table').dataTable(_tableParam);
             this.loadedTableData = true;
         } 
     },

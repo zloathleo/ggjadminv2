@@ -22,7 +22,7 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name" :readonly="itemData.update">
                                 </div>
                             </div>
 
@@ -59,21 +59,34 @@ export default {
             let _name = this.itemData.name;
 
             if (!_name.isBlank()) {
-                _name = _name.trim(); 
+                _name = _name.trim();
 
                 var params = new URLSearchParams();
-                params.append('type', this.itemData.type);
                 params.append('name', _name);
-                // params.append('startTime', stime);
-                // params.append('endTime', etime);
+                params.append('content', this.itemData.content);
 
-                let _this = this;
-                this.$axios.post('pages/add', params).then(function (response) {
-                    toastr.success("保存页面成功");
-                    // _this.$eventHub.$emit('messages.updated');
-                }).catch(function (error) {
-                    toastr.error("保存数据异常 [" + _this.$constant.parseError(error) + "]");
-                });
+                if (this.itemData.update) {
+                    let _this = this;
+                    this.$axios.post('/pages/' + this.itemData.label + '/update', params).then(function (response) {
+                        toastr.success("保存页面成功");
+                        // _this.$eventHub.$emit('messages.updated');
+                    }).catch(function (error) {
+                        toastr.error("保存数据异常 [" + _this.$constant.parseError(error) + "]");
+                    });
+                } else {
+                    //添加   
+                    let _this = this;
+                    this.$axios.post('/pages/add', params).then(function (response) {
+                        toastr.success("保存页面成功");
+                        // _this.$eventHub.$emit('messages.updated');
+                        // console.log(response.data);
+                        _this.$router.replace({ name: 'page_page' });
+                    }).catch(function (error) {
+                        toastr.error("保存数据异常 [" + _this.$constant.parseError(error) + "]");
+                    });
+                }
+
+
             } else {
                 toastr.error("页面名称不合法或为空");
             }
