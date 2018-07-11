@@ -1,9 +1,49 @@
 export default {
     serverPath: "http://116.62.150.38:8080/ggmanager/",
 
+    uuid: function (len, radix) {
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = [], i;
+        radix = radix || chars.length;
+        if (len) {
+            // Compact form
+            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+        } else {
+            var r;
+            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+            uuid[14] = '4';
+            for (i = 0; i < 36; i++) {
+                if (!uuid[i]) {
+                    r = 0 | Math.random() * 16;
+                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+                }
+            }
+        }
+        return uuid.join('');
+    },
+    
+    parseError: function (error) {
+        if (error && error.response && error.response.data && error.response.data.message) {
+            return error.response.data.message;
+        }
+        return error;
+    },
+
     parseDateTime: function (_long) {
-        var _d = new Date(_long).Format("yyyy-MM-dd HH:mm:ss");
-        return _d;
+        if (_long) {
+            return new Date(_long).Format("yyyy-MM-dd HH:mm:ss");
+        } else {
+            return "-";
+        }
+    },
+
+    parseScreenType: function (_stype) {
+        if (_stype === "1") {
+            return "竖屏";
+        } else if (_stype === "2") {
+            return "横屏";
+        }
+        return '';
     },
 
     parseMsgState: function (_s) {
@@ -18,6 +58,7 @@ export default {
     },
     newDataTableOptions: function () {
         return {
+            destroy: true,
             ordering: false,
             searching: true,
             pagingType: "full_numbers",

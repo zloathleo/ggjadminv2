@@ -11,10 +11,10 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">删除用户</div>
+                        <div class="modal-title">删除广告机</div>
                     </div>
                     <div class="block-content" style="padding-bottom: 20px;">
-                        确定删除用户 {{editData?editData.itemLabel:''}} 吗?
+                        确定删除广告机 {{itemData.name}} 吗?
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -32,24 +32,26 @@
 export default {
     data: function () {
         return {
-            editData: undefined
+            itemData: {},
         }
     },
     mounted() {
     },
 
     methods: {
+        setItem: function (_item) {
+            this.itemData = _item;
+        },
         ok: function () {
-            let _label = this.editData.itemLabel;
-            if (!_label.isBlank()) { 
+            let _label = this.itemData.label;
+            if (!_label.isBlank()) {
                 let _this = this;
-                this.$axios.post('users/' +_label+ '/delete').then(function (response) {
-                    toastr.success("删除用户成功");
+                this.$axios.post('devices/' + _label + '/delete').then(function (response) {
+                    toastr.success("删除广告机成功");
+                    _this.$eventHub.$emit('devices.updated');
                 }).catch(function (error) {
-                    toastr.error("删除用户异常 [" + error + "]");
+                    toastr.error("删除数据异常 [" + _this.$constant.parseError(error) + "]");
                 });
-            } else {
-                toastr.error("用户名不合法或为空");
             }
         }
     }

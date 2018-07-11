@@ -14,7 +14,7 @@
                         <div class="modal-title">删除分组</div>
                     </div>
                     <div class="block-content" style="padding-bottom: 20px;">
-                        确定删除分组 {{editData?editData.itemLabel:''}} 吗?
+                        确定删除分组 {{itemData.name}} 吗?
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -32,24 +32,27 @@
 export default {
     data: function () {
         return {
-            editData: undefined
+            itemData: {},
         }
     },
     mounted() {
     },
 
     methods: {
+        setItem: function (_item) {
+            this.itemData = _item;
+        },
         ok: function () {
-            let _label = this.editData.itemLabel;
-            if (!_label.isBlank()) { 
+            let _label = this.itemData.label;
+            if (!_label.isBlank()) {
                 let _this = this;
-                this.$axios.post('groups/' +_label+ '/delete').then(function (response) {
+                this.$axios.post('groups/' + _label + '/delete').then(function (response) {
                     toastr.success("删除分组成功");
+                    _this.$eventHub.$emit('groups.updated');
                 }).catch(function (error) {
-                    toastr.error("删除分组异常 [" + error + "]");
+                    toastr.error("删除数据异常 [" + _this.$constant.parseError(error) + "]");
                 });
-            } else {
-                toastr.error("分组名称不合法或为空");
+            } else { 
             }
         }
     }

@@ -18,29 +18,47 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">消息内容
-                                    <span class="text-danger">*</span>
-                                </label>
+                                <label class="col-xs-4 control-label" for="val-skill">消息类型</label>
                                 <div class="col-xs-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
+                                    <select class="form-control" v-model="itemData.type">
+                                        <option value='text'>文字</option>
+                                        <option value='sound'>语音</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">生效时间
+                                <label class="col-xs-4 control-label">消息内容
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input ref="inputBeginTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">结束时间
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-xs-6">
-                                    <input ref="inputEndTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
+                                <label class="col-xs-4 control-label">生效时间 </label>
+                                <div class="col-xs-6"> 
+                                    <div class="js-datetimepicker input-group date">
+                                        <input id="inputStartTime" class="form-control" type="text" placeholder="选择生效时间..">
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">结束时间 </label>
+                                <div class="col-xs-6"> 
+                                    <div class="js-datetimepicker input-group date">
+                                        <input id="inputEndTime" class="form-control" type="text" placeholder="选择结束时间..">
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -62,15 +80,43 @@
 export default {
     data: function () {
         return {
+            itemData: {
+                type: 'text'
+            },
         }
     },
     mounted() {
     },
 
     methods: {
+        setItem: function () {
+        },
         ok: function () {
-            toastr.success("添加用户成功");
+            let _name = this.itemData.name;
+
+            var stime = $("#inputStartTime").val();
+            var etime = $("#inputEndTime").val(); 
+            if (!_name.isBlank()) {
+                _name = _name.trim();
+
+                var params = new URLSearchParams();
+                params.append('type', this.itemData.type);
+                params.append('name', _name);
+                // params.append('startTime', stime);
+                // params.append('endTime', etime);
+
+                let _this = this;
+                this.$axios.post('messages/add', params).then(function (response) {
+                    toastr.success("添加消息成功");
+                    _this.$eventHub.$emit('messages.updated');
+                }).catch(function (error) {
+                    toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
+                });
+            } else {
+                toastr.error("消息内容不合法或为空");
+            }
         }
+
     }
 }
 </script>

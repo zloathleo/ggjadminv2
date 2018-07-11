@@ -3,10 +3,10 @@
 
         <div class="block-header">
             <div class="block-options-simple">
-                <router-link class="btn btn-xs btn-primary" :to="{name:'page_page_creater'}">
-                    <i class="fa fa-plus"></i> 添加页面</router-link>
+                <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
+                    <i class="fa fa-plus"></i> 添加 </button>
 
-                <button type="button" class="btn btn-xs btn-warning" disabled>
+                <button type="button" class="btn btn-minw btn-success" v-on:click="reloadPage">
                     <i class="fa fa-refresh"></i> 刷新 </button>
             </div>
             <h3 class="block-title">页面管理</h3>
@@ -20,29 +20,27 @@
                         <th class="text-center">#</th>
                         <th class="text-center">页面名称</th>
                         <th class="text-center">页面修改时间</th>
-                        <th class="text-center" style="width: 20%;">更新页面</th>
-                        <th class="text-center">预览效果</th>
-                        <th class="text-center" style="width: 20%;">发布页面</th>
+                        <th class="text-center" style="width: 20%;">更新</th>
+                        <th class="text-center">操作</th>
+                        <th class="text-center" style="width: 20%;">激活</th>
 
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in tableData">
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center font-w600">{{item.label}}</td>
+                        <td class="text-center font-w600">{{item.name}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.updateTime)}}</td>
                         <td class="text-center">
-                            <router-link class="btn btn-xs btn-danger" :to="{name:'page_page_update',params:{ label: item.label }}">
-                                <i class="fa fa-pencil"></i> 修改布局</router-link>
+                            <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item)">更新布局 </button>
                         </td>
                         <td class="text-center">
-                            <a v-if="item.label" class="btn btn-xs btn-warning" type="button" :href="'http://116.62.150.38:8080/client/index.html?page=' + item.label" target="_blank">预览
+                            <a v-if="item.label" class="btn btn-xs btn-primary" type="button" :href="'http://116.62.150.38:8080/client/index.html?page=' + item.label" target="_blank">预览
                             </a>
+                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除 </button>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-xs btn-success" :data-label="item.label" type="button" v-on:click="public">发布到广告机
-                                <i class="fa fa-pencil"></i>
-                            </button>
+                            <button class="btn btn-xs btn-success" type="button" v-on:click="publicItem(item)">激活 </button>
                         </td>
                     </tr>
                 </tbody>
@@ -56,48 +54,73 @@ export default {
     components: {},
     data: function () {
         return {
+            loadedTableData: false,//ui初次更新
             tableData: [],
         }
     },
+
     mounted() {
-        this.initDataTableFullPagination();
+        this._initData();
+        let _this = this;
+        this.$eventHub.$on('pages.updated', function (data) {
+            setTimeout(function () { location.reload(); }, 500);
+        });
     },
     updated: function () {
-        //UI
-        let _tableParam = this.$constant.newDataTableOptions();
-        jQuery('#module_page_table').dataTable(_tableParam);
+        if (!this.loadedTableData) {
+            //UI 初始化
+            let _tableParam = this.$constant.newDataTableOptions();
+            //定义搜索列
+            _tableParam = Object.assign(_tableParam, {
+                "columns": [
+                    { "searchable": false },
+                    { "searchable": true },
+                    { "searchable": false },
+                    { "searchable": false },
+                    { "searchable": false },
+                    { "searchable": false }
+                ]
+            });
+            _tableParam.language.searchPlaceholder = '页面名称';
+            jQuery('#module_device_table').dataTable(_tableParam);
+            this.loadedTableData = true;
+        }
     },
     methods: {
-        initDataTableFullPagination: function () {
-            let _this = this;
-            this.$axios.get('ymgl')
-                .then(function (response) {
-                    let _data = response.data;
-                    if (_data) {
-                        _this.tableData = _data.rows;
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+        _initData: function () {
+            this._refreshTableData();
         },
-        public: function () {
+        _refreshTableData: function () {
+            //更新按钮操作
             let _this = this;
-            _this.$mem.state.publicPageName = window.event.target.getAttribute("data-label");
+            this.$axios.get('/pages').then(function (response) {
+                let _data = response.data;
+                if (_data) {
+                    _this.tableData = _data.rows;
+                }
+            }).catch(function (error) {
+                toastr.error("刷新表格数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
+        },
 
+        reloadPage: function () {
+            location.reload();
+        },
 
-            this.$axios.get('sbgl/sb')
-                .then(function (response) {
-                    let _data = response.data;
-                    if (_data) {
-                        let _rows = _data.rows;
-                        _this.$mem.commit("changeModalDeviceList", _rows);
-                        $('#modal-public-device').modal('show');
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+        addItem: function () {
+            this.$router.push({ name: 'page_page_creater' });
+        },
+        editItem: function (item) {
+            this.$router.push({ name: 'page_page_update', params: { label: item.label } });
+        },
+        deleteItem: function (item) {
+            // this.$refs.modalDelete.setItem({
+            //     label: item.label,
+            //     name: item.name,
+            // });
+            // $('#modal-item-delete').modal('show');
+        },
+        publicItem: function (item) {
         },
     }
 

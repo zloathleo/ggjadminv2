@@ -18,43 +18,43 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">分组名称
+                                <label class="col-xs-4 control-label" for="example-maxlength1">分组名称
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">屏幕类型</label>
-                                <div class="col-md-6">
-                                    <select ref="inputScreenType" class="form-control">
-                                        <option value="1">竖屏</option>
-                                        <option value="2">横屏</option>
+                                <label class="col-xs-4 control-label" for="val-skill">屏幕类型</label>
+                                <div class="col-xs-6">
+                                    <select class="form-control" v-model="itemData.type">
+                                        <option value=1>竖屏</option>
+                                        <option value=2>横屏</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">屏幕宽度</label>
-                                <div class="col-md-6">
-                                    <input ref="inputScreenWidth" class="js-maxlength form-control" type="text" maxlength="20">
+                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕宽度</label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.width">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">屏幕高度</label>
-                                <div class="col-md-6">
-                                    <input ref="inputScreenHeight" class="js-maxlength form-control" type="text" maxlength="20">
+                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕高度</label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.height">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">维护人员</label>
-                                <div class="col-md-6">
-                                    <select ref="inputOperator" class="form-control">
-                                        <option v-for="(item, index) in tableData" :value="item.label">{{item.label}}</option>
+                                <label class="col-xs-4 control-label" for="val-skill">维护人员</label>
+                                <div class="col-xs-6">
+                                    <select class="form-control" v-model="itemData.user">
+                                        <option v-for="(item, index) in tableData" :value="item.name">{{item.name}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -78,16 +78,22 @@
 export default {
     data: function () {
         return {
+            itemData: {
+                type: 1,
+                width: 0,
+                height: 0,
+                user: '',
+            },
             tableData: [],
         }
     },
     mounted() {
-        this.initData();
     },
 
     methods: {
-        initData: function () {
+        setItem: function () {
             let _this = this;
+
             this.$axios.get('/users', {
                 params: {
                     filtergroup: true
@@ -98,25 +104,24 @@ export default {
                     _this.tableData = _data.rows;
                 }
             }).catch(function (error) {
-                toastr.error("操作人员获取异常 [" + error + "]");
+                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
             });
         },
-
         ok: function () {
 
-            let _label = this.$refs.inputName.value;
-            let _type = this.$refs.inputScreenType.value;
-            let _width = this.$refs.inputScreenWidth.value;
-            let _height = this.$refs.inputScreenHeight.value;
-            let _operator = this.$refs.inputOperator.value;
+            let _name = this.itemData.name;
+            let _type = this.itemData.type;
+            let _width = this.itemData.width;
+            let _height = this.itemData.height;
+            let _operator = this.itemData.user;
 
-            if (_label.isBlank()) {
+            if (_name.isBlank()) {
                 toastr.error("输入名称不合法或为空");
                 return;
-            } 
+            }
 
             var params = new URLSearchParams();
-            params.append('label', _label.trim());
+            params.append('name', _name.trim());
             params.append('type', _type);
             params.append('width', _width);
             params.append('height', _height);
@@ -125,8 +130,9 @@ export default {
             let _this = this;
             this.$axios.post('groups/add', params).then(function (response) {
                 toastr.success("添加分组成功");
+                _this.$eventHub.$emit('groups.updated');
             }).catch(function (error) {
-                toastr.error("添加分组异常 [" + error + "]");
+                toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
             });
 
         }

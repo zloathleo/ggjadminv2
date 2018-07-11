@@ -155,11 +155,43 @@ var App = function () {
         });
     };
 
+    var uiHelperDatetimepicker = function () {
+        // Init Bootstrap Datetimepicker (with .js-datetimepicker class)
+        jQuery('.js-datetimepicker').each(function () {
+            var $input = jQuery(this);
+
+            $input.datetimepicker({
+                // language: 'zh-CN',
+                // autoclose: true,
+                format: 'YYYY-MM-DD hh:mm:ss' ,
+                // useCurrent: $input.data('use-current') ? $input.data('use-current') : false,
+                locale: moment.locale('zh-cn'),
+                showTodayButton: true,
+                showClear: true,
+                showClose: true,
+                sideBySide: true,
+                inline: false,
+                icons: {
+                    time: 'si si-clock',
+                    date: 'si si-calendar',
+                    up: 'si si-arrow-up',
+                    down: 'si si-arrow-down',
+                    previous: 'si si-arrow-left',
+                    next: 'si si-arrow-right',
+                    today: 'si si-size-actual',
+                    clear: 'si si-trash',
+                    close: 'si si-close'
+                }
+            });
+        });
+    };
+
     return {
         init: function ($func) {
             uiInit();
             uiLayout();
             uiNav();
+            uiHelperDatetimepicker();
         },
     };
 }();
@@ -173,4 +205,3 @@ jQuery(function () {
 });
 
 
- 

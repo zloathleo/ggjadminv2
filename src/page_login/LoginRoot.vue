@@ -33,6 +33,7 @@
 
 <script>     
 import Storejs from 'store';
+import jsmd5 from 'js-md5';
 export default {
   methods: {
     login: function () {
@@ -40,7 +41,7 @@ export default {
       let pw = this.$refs.inputPassword.value;
 
       if (un && pw) {
-
+        pw = jsmd5(pw);
         const url = '/account/login';
         var params = new URLSearchParams();
         params.append('name', un);
@@ -52,8 +53,8 @@ export default {
         }).then((res) => {
           Storejs.set("user", res.data);
           window.location.href = "index.html";
-        }).catch(function (error) { 
-          toastr.error("登录异常 [" + error + "]"); 
+        }).catch(function (error) {
+          toastr.error("登录异常 [" + error + "]");
         });
       }
     },

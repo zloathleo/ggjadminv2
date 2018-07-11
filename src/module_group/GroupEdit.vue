@@ -18,43 +18,43 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">分组名称
+                                <label class="col-xs-4 control-label">分组名称
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" :value="editData?editData.itemLabel:''" type="text" maxlength="20" disabled>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" readonly v-model="itemData.name">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">屏幕类型</label>
-                                <div class="col-md-6">
-                                    <select ref="inputScreenType" class="form-control">
-                                        <option value="1">竖屏</option>
-                                        <option value="2">横屏</option>
+                                <label class="col-xs-4 control-label">屏幕类型</label>
+                                <div class="col-xs-6">
+                                    <select class="form-control" v-model="itemData.type">
+                                        <option value=1>竖屏</option>
+                                        <option value=2>横屏</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">屏幕宽度</label>
-                                <div class="col-md-6">
-                                    <input ref="inputScreenWidth" class="js-maxlength form-control" type="text" maxlength="20">
+                                <label class="col-xs-4 control-label">屏幕宽度</label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.width">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">屏幕高度</label>
-                                <div class="col-md-6">
-                                    <input ref="inputScreenHeight" class="js-maxlength form-control" type="text" maxlength="20">
+                                <label class="col-xs-4 control-label">屏幕高度</label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.height">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="val-skill">维护人员</label>
-                                <div class="col-md-6">
-                                    <select ref="inputOperator" class="form-control">
-                                        <option v-for="(item, index) in tableData" :value="item.label">{{item.label}}</option> 
+                                <label class="col-xs-4 control-label">维护人员</label>
+                                <div class="col-xs-6">
+                                    <select class="form-control" v-model="itemData.user">
+                                        <option v-for="(item, index) in tableData" :value="item.name">{{item.name}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -78,38 +78,48 @@
 export default {
     data: function () {
         return {
-            tableData:[],
-            editData: undefined
+            itemData: {},
+            tableData: [],
         }
     },
     mounted() {
-        this.initData();
+    },
+    updated() {
+        console.log(123);
     },
 
     methods: {
-        initData: function () {
+        setItem: function (_item) {
             let _this = this;
+
+            this.$axios.get('/groups/' + _item.label).then(function (response) {
+                let _data = response.data;
+                _this.itemData = _data;
+            }).catch(function (error) {
+                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
+
             this.$axios.get('/users', {
                 params: {
                     filtergroup: true
                 }
             }).then(function (response) {
-                let _data = response.data; 
+                let _data = response.data;
                 if (_data) {
                     _this.tableData = _data.rows;
                 }
             }).catch(function (error) {
-                 toastr.error("操作人员获取异常 [" + error + "]");
+                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
             });
         },
 
         ok: function () {
 
-            let _label = this.$refs.inputName.value;
-            let _type = this.$refs.inputScreenType.value;
-            let _width = this.$refs.inputScreenWidth.value;
-            let _height = this.$refs.inputScreenHeight.value;
-            let _operator = this.$refs.inputOperator.value;
+            let _label = this.itemData.label;
+            let _type = this.itemData.type;
+            let _width = this.itemData.width;
+            let _height = this.itemData.height;
+            let _operator = this.itemData.user;
 
             var params = new URLSearchParams();
             params.append('type', _type);
@@ -120,8 +130,9 @@ export default {
             let _this = this;
             this.$axios.post('groups/' + _label + '/update', params).then(function (response) {
                 toastr.success("修改分组成功");
+                _this.$eventHub.$emit('groups.updated');
             }).catch(function (error) {
-                toastr.error("修改分组异常 [" + error + "]");
+                toastr.error("修改数据异常 [" + _this.$constant.parseError(error) + "]");
             });
 
 

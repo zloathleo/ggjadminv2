@@ -1,6 +1,6 @@
 <template>
 
-    <div class="modal fade" id="modal-item-edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="modal-pagesave" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="block block-themed block-transparent remove-margin-b">
@@ -12,17 +12,17 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">重置用户密码</div>
+                        <div class="modal-title">保存该页面</div>
                     </div>
                     <div class="block-content">
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">用户名称
+                                <label class="col-xs-4 control-label">页面名称
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" v-model="itemData.name" maxlength="20" readonly>
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
                                 </div>
                             </div>
 
@@ -40,17 +40,15 @@
 
 </template>
 
-<script>   
-
+<script>    
 export default {
     data: function () {
         return {
-            itemData: {}
+            itemData: {
+            },
         }
     },
-
     mounted() {
-
     },
 
     methods: {
@@ -59,15 +57,28 @@ export default {
         },
         ok: function () {
             let _name = this.itemData.name;
-            let _this = this;
-            this.$axios.post('users/' + _name + '/reset').then(function (response) {
-                toastr.success("用户密码重置成功");
-                _this.$eventHub.$emit('users.updated');
-            }).catch(function (error) {
-                toastr.error("用户密码重置异常 [" + _this.$constant.parseError(error) + "]");
-            });
 
+            if (!_name.isBlank()) {
+                _name = _name.trim(); 
+
+                var params = new URLSearchParams();
+                params.append('type', this.itemData.type);
+                params.append('name', _name);
+                // params.append('startTime', stime);
+                // params.append('endTime', etime);
+
+                let _this = this;
+                this.$axios.post('pages/add', params).then(function (response) {
+                    toastr.success("保存页面成功");
+                    // _this.$eventHub.$emit('messages.updated');
+                }).catch(function (error) {
+                    toastr.error("保存数据异常 [" + _this.$constant.parseError(error) + "]");
+                });
+            } else {
+                toastr.error("页面名称不合法或为空");
+            }
         }
+
     }
 }
 </script>

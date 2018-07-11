@@ -18,29 +18,47 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">消息内容
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" :value="editData?editData.itemLabel:''" maxlength="20" disabled>
+                                <label class="col-xs-4 control-label" for="val-skill">消息类型</label>
+                                <div class="col-xs-6">
+                                    <select class="form-control" v-model="itemData.type">
+                                        <option value='text'>文字</option>
+                                        <option value='sound'>语音</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">生效时间
+                                <label class="col-xs-4 control-label">消息内容
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input ref="inputBeginTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">结束时间
-                                    <span class="text-danger">*</span>
-                                </label>
+                                <label class="col-xs-4 control-label">生效时间 </label>
                                 <div class="col-xs-6">
-                                    <input ref="inputEndTime" class="js-maxlength form-control" type="text" maxlength="20" placeholder="选择时间" readonly>
+                                    <div class="js-datetimepicker input-group date">
+                                        <input id="inputStartTime" class="form-control" type="text" placeholder="选择生效时间..">
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">结束时间 </label>
+                                <div class="col-xs-6">
+                                    <div class="js-datetimepicker input-group date">
+                                        <input id="inputEndTime" class="form-control" type="text" placeholder="选择结束时间..">
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -63,15 +81,39 @@
 export default {
     data: function () {
         return {
-            editData: undefined
+            itemData: {}
         }
-    }, 
-    mounted() { 
+    },
+    mounted() {
     },
 
-    methods: { 
-        ok: function () { 
-            toastr.success("用户密码重置成功");
+    methods: {
+        setItem: function (_item) {
+            let _this = this;
+
+            this.$axios.get('/messages/' + _item.label).then(function (response) {
+                _this.itemData = response.data;
+            }).catch(function (error) {
+                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
+        },
+
+        ok: function () {
+            let _label = this.itemData.label;
+            let _name = this.itemData.name;
+            let _type = this.itemData.type;
+
+            var params = new URLSearchParams();
+            params.append('name', _name);
+            params.append('type', _type);
+
+            let _this = this;
+            this.$axios.post('messages/' + _label + '/update', params).then(function (response) {
+                toastr.success("修改消息成功");
+                // _this.$eventHub.$emit('messages.updated');
+            }).catch(function (error) {
+                toastr.error("修改数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
         }
     }
 }

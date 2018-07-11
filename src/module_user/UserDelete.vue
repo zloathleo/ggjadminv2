@@ -14,7 +14,7 @@
                         <div class="modal-title">删除用户</div>
                     </div>
                     <div class="block-content" style="padding-bottom: 20px;">
-                        确定删除用户 {{editData?editData.itemLabel:''}} 吗?
+                        确定删除用户 {{itemData.name}} 吗?
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -32,21 +32,25 @@
 export default {
     data: function () {
         return {
-            editData: undefined
+            itemData: {}
         }
     },
     mounted() {
     },
 
     methods: {
+        setItem: function (_item) {
+            this.itemData = _item;
+        },
         ok: function () {
-            let _label = this.editData.itemLabel;
-            if (!_label.isBlank()) { 
+            let _name = this.itemData.name;
+            if (!_name.isBlank()) {
                 let _this = this;
-                this.$axios.post('users/' +_label+ '/delete').then(function (response) {
+                this.$axios.post('users/' + _name + '/delete').then(function (response) {
                     toastr.success("删除用户成功");
+                    _this.$eventHub.$emit('users.updated');
                 }).catch(function (error) {
-                    toastr.error("删除用户异常 [" + error + "]");
+                    toastr.error("删除数据异常 [" + _this.$constant.parseError(error) + "]");
                 });
             } else {
                 toastr.error("用户名不合法或为空");

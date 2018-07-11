@@ -16,6 +16,7 @@ let _user = Storejs.get("user");
 if (_user) {
     if (_user.type && _user.token) {
         Mem.state.user = _user;
+        Axios.defaults.headers.accesstoken = _user.token;
     } else {
         window.location.href = "login.html";
     }

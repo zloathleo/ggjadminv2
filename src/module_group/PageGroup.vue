@@ -1,6 +1,6 @@
 <template>
     <div class="block">
-        <GroupAdd />
+        <GroupAdd ref="modalAdd" />
         <GroupEdit ref="modalEdit" />
         <GroupDelete ref="modalDelete" />
         <div class="block-header">
@@ -8,7 +8,7 @@
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
                     <i class="fa fa-plus"></i> 添加 </button>
 
-                <button type="button" class="btn btn-minw btn-success" v-on:click="refreshTableData">
+                <button type="button" class="btn btn-minw btn-success" v-on:click="reloadPage">
                     <i class="fa fa-refresh"></i> 刷新 </button>
             </div>
             <div class="block-title">分组管理</div>
@@ -18,8 +18,7 @@
             <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality initialized in js/pages/base_tables_datatables.js -->
             <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
-                    <tr>
-                        <th class="text-center hidden">隐藏ID</th>
+                    <tr> 
                         <th class="text-center">#</th>
                         <th class="text-center">分组名称</th>
                         <th class="text-center">屏幕类型</th>
@@ -32,22 +31,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in tableData">
-                        <td class="text-center hidden">{{item.label}}</td>
+                    <tr v-for="(item, index) in tableData"> 
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center">{{item.des}}</td>
-                        <td class="text-center">{{item.type}}</td>
+                        <td class="text-center">{{item.name}}</td>
+                        <td class="text-center">{{$constant.parseScreenType(item.type)}}</td>
                         <td class="text-center">{{item.width}}</td>
                         <td class="text-center">{{item.height}}</td>
-                        <td class="text-center">{{item.operater}}</td>
+                        <td class="text-center">{{item.user}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.updateTime)}}</td>
                         <td class="text-center">
                             <a class="btn btn-xs btn-info" :href="'http://116.62.150.38:8080/client/index.html?dn=' + item.label" target="_blank">预览
                             </a>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item.label)">编辑</button>
-                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item.label)">删除</button>
+                            <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item)">编辑</button>
+                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除</button>
                         </td>
                     </tr>
                 </tbody>
@@ -69,17 +67,19 @@ export default {
         }
     },
     mounted() {
-        this.initData();
+        this._initData();
+        let _this = this;
+        this.$eventHub.$on('groups.updated', function (data) {
+            setTimeout(function () { location.reload(); }, 500);
+        });
     },
     updated: function () {
         if (!this.loadedTableData) {
-            //UI
-            let _tableParam = this.$constant.newDataTableOptions();
-
+            //UI 初始化
+            let _tableParam = this.$constant.newDataTableOptions(); 
             //定义搜索列
             _tableParam = Object.assign(_tableParam, {
-                "columns": [
-                    { "searchable": false },
+                "columns": [ 
                     { "searchable": false },
                     { "searchable": true },
                     { "searchable": false },
@@ -91,18 +91,16 @@ export default {
                     { "searchable": false }
                 ]
             });
-            _tableParam.language.searchPlaceholder = '名称/维护人员';
-
+            _tableParam.language.searchPlaceholder = '名称/维护人员'; 
             jQuery('#module_device_table').dataTable(_tableParam);
             this.loadedTableData = true;
-        }
-
+        } 
     },
     methods: {
-        initData: function () {
-            this.refreshTableData();
+        _initData: function () {
+            this._refreshTableData();
         },
-        refreshTableData: function () {
+        _refreshTableData: function () {
             let _this = this;
             this.$axios.get('/groups').then(function (response) {
                 let _data = response.data;
@@ -110,35 +108,30 @@ export default {
                     _this.tableData = _data.rows;
                 }
             }).catch(function (error) {
-                toastr.error("获取表格异常 [" + error + "]");
+                toastr.error("刷新表格数据异常 [" + _this.$constant.parseError(error) + "]");
             });
         },
+        reloadPage: function () {
+            location.reload();
+        },
+        
         addItem: function () {
+            this.$refs.modalAdd.setItem();
             $('#modal-item-add').modal('show');
         },
-        editItem: function (_label) {
-            let _this = this;
-
-            let _jqModal = $('#modal-item-edit');
-            _jqModal.on('show.bs.modal', function (_event) {
-                let _modal = _this.$refs.modalEdit;
-                _modal.editData = {
-                    itemLabel: _label
-                }
+        editItem: function (item) {
+            this.$refs.modalEdit.setItem({
+                label: item.label,
+                name: item.name,
             });
-            _jqModal.modal('show');
+            $('#modal-item-edit').modal('show');
         },
-        deleteItem: function (_label) {
-            let _this = this;
-
-            let _jqModal = $('#modal-item-delete');
-            _jqModal.on('show.bs.modal', function (_event) {
-                let _modal = _this.$refs.modalDelete;
-                _modal.editData = {
-                    itemLabel: _label
-                }
+        deleteItem: function (item) {
+            this.$refs.modalDelete.setItem({
+                label: item.label,
+                name: item.name,
             });
-            _jqModal.modal('show');
+            $('#modal-item-delete').modal('show');
         },
         preview: function () {
 

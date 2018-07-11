@@ -4,8 +4,7 @@ import constant from './constant';
 
 axios.defaults.baseURL = constant.serverPath;
 //设置默认请求头
-axios.defaults.headers = {
-    'X-Requested-With': 'XMLHttpRequest',
+axios.defaults.headers = { 
     'Content-Type': 'application/x-www-form-urlencoded',
 }
 axios.defaults.timeout = 10000;
@@ -62,7 +61,7 @@ axios.interceptors.response.use(function (response) {
     })
  
 //数据模拟
-import mock from './mock';
-mock.init(axios);
+// import mock from './mock';
+// mock.init(axios);
 
 export default axios;

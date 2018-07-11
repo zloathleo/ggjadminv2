@@ -19,8 +19,8 @@
 
                         <form class="form-horizontal">
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">直播名称</label>
-                                <div class="col-md-6">
+                                <label class="col-xs-4 control-label" for="example-maxlength1">直播名称</label>
+                                <div class="col-xs-6">
                                     <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
                                 </div>
                             </div>

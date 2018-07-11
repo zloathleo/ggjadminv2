@@ -12,17 +12,31 @@
                                 </button>
                             </li>
                         </ul>
-                        <div class="modal-title">重置用户密码</div>
+                        <div class="modal-title">修改广告机</div>
                     </div>
                     <div class="block-content">
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">用户名称
+                                <label class="col-xs-4 control-label" for="example-maxlength1">广告机名称
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" :value="editData?editData.itemLabel:''" maxlength="20" disabled>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="example-maxlength1">广告机品牌
+                                </label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.brand">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="example-maxlength1">广告机型号
+                                </label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.model">
                                 </div>
                             </div>
 
@@ -45,25 +59,40 @@
 export default {
     data: function () {
         return {
-            editData: undefined
+            itemData: {},
         }
     },
-
     mounted() {
 
     },
-
     methods: {
-
-        ok: function () {
-            let _label = this.editData.itemLabel; 
+        setItem: function (_item) {
             let _this = this;
-            this.$axios.post('users/' + _label + '/reset').then(function (response) {
-                toastr.success("用户密码重置成功");
-            }).catch(function (error) {
-                toastr.error("用户密码重置异常 [" + error + "]");
-            });
 
+            this.$axios.get('/devices/' + _item.label).then(function (response) {
+                let _data = response.data;
+                _this.itemData = _data;
+            }).catch(function (error) {
+                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
+        },
+        ok: function () {
+
+            let _label = this.itemData.label;
+            let _brand = this.itemData.brand;
+            let _model = this.itemData.model;
+
+            var params = new URLSearchParams();
+            params.append('brand', _brand);
+            params.append('model', _model);
+
+            let _this = this;
+            this.$axios.post('devices/' + _label + '/update', params).then(function (response) {
+                toastr.success("修改广告机成功");
+                _this.$eventHub.$emit('devices.updated');
+            }).catch(function (error) {
+                toastr.error("修改数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
         }
     }
 }

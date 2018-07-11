@@ -1,6 +1,6 @@
 <template>
     <div class="block">
-        <MsgAdd />
+        <MsgAdd ref="modalAdd" />
         <MsgEdit ref="modalEdit" />
         <MsgDelete ref="modalDelete" />
         <div class="block-header">
@@ -8,19 +8,18 @@
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
                     <i class="fa fa-plus"></i> 添加 </button>
 
-                <button type="button" class="btn btn-minw btn-success" v-on:click="refreshTableData">
+                <button type="button" class="btn btn-minw btn-success" v-on:click="reloadPage">
                     <i class="fa fa-refresh"></i> 刷新 </button>
             </div>
             <div class="block-title">消息管理</div>
         </div>
 
         <div class="block-content">
-            <!-- DataTables init on table by adding .js-dataTable-full-pagination class, functionality initialized in js/pages/base_tables_datatables.js -->
             <table id="module_device_table" class="table table-bordered table-striped js-dataTable-full-pagination">
                 <thead>
                     <tr>
-                        <th class="text-center hidden">隐藏ID</th>
                         <th class="text-center">#</th>
+                        <th class="text-center">消息类型</th>
                         <th class="text-center">消息内容</th>
                         <th class="text-center">生效时间</th>
                         <th class="text-center">结束时间</th>
@@ -30,15 +29,15 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in tableData">
-                        <td class="text-center hidden">{{item.label}}</td>
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center">{{item.content}}</td>
-                        <td class="text-center">{{$constant.parseDateTime(item.beginTime)}}</td>
+                        <td class="text-center">{{item.type}}</td>
+                        <td class="text-center">{{item.name}}</td>
+                        <td class="text-center">{{$constant.parseDateTime(item.startTime)}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.endTime)}}</td>
-                        <td class="text-center">{{$constant.parseMsgState(item.status)}}</td>
+                        <td class="text-center">{{$constant.parseMsgState(1)}}</td>
                         <td class="text-center">
-                            <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item.label)">编辑</button>
-                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item.label)">删除</button>
+                            <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item)">编辑</button>
+                            <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除</button>
                         </td>
                     </tr>
                 </tbody>
@@ -60,13 +59,16 @@ export default {
         }
     },
     mounted() {
-        this.initData();
+        this._initData();
+        let _this = this;
+        this.$eventHub.$on('messages.updated', function (data) {
+            setTimeout(function () { location.reload(); }, 500);
+        });
     },
     updated: function () {
         if (!this.loadedTableData) {
-            //UI
+            //UI 初始化
             let _tableParam = this.$constant.newDataTableOptions();
-
             //定义搜索列
             _tableParam = Object.assign(_tableParam, {
                 "columns": [
@@ -80,16 +82,15 @@ export default {
                 ]
             });
             _tableParam.language.searchPlaceholder = '内容';
-
             jQuery('#module_device_table').dataTable(_tableParam);
             this.loadedTableData = true;
         }
     },
     methods: {
-        initData: function () {
-            this.refreshTableData();
+        _initData: function () {
+            this._refreshTableData();
         },
-        refreshTableData: function () {
+        _refreshTableData: function () {
             //更新按钮操作
             let _this = this;
             this.$axios.get('/messages').then(function (response) {
@@ -98,36 +99,32 @@ export default {
                     _this.tableData = _data.rows;
                 }
             }).catch(function (error) {
-                toastr.error("获取表格数据异常 [" + error + "]");
+                toastr.error("刷新表格数据异常 [" + _this.$constant.parseError(error) + "]");
             });
         },
+        reloadPage: function () {
+            location.reload();
+        },
+
         addItem: function () {
+            this.$refs.modalAdd.setItem();
             $('#modal-item-add').modal('show');
         },
-        editItem: function (_label) {
-            let _this = this;
-
-            let _jqModal = $('#modal-item-edit');
-            _jqModal.on('show.bs.modal', function (_event) {
-                let _modal = _this.$refs.modalEdit;
-                _modal.editData = {
-                    itemLabel: _label
-                }
+        editItem: function (item) {
+            this.$refs.modalEdit.setItem({
+                label: item.label,
+                name: item.name,
             });
-            _jqModal.modal('show');
+            $('#modal-item-edit').modal('show');
         },
-        deleteItem: function (_label) {
-            let _this = this;
-
-            let _jqModal = $('#modal-item-delete');
-            _jqModal.on('show.bs.modal', function (_event) {
-                let _modal = _this.$refs.modalDelete;
-                _modal.editData = {
-                    itemLabel: _label
-                }
+        deleteItem: function (item) {
+            this.$refs.modalDelete.setItem({
+                label: item.label,
+                name: item.name,
             });
-            _jqModal.modal('show');
+            $('#modal-item-delete').modal('show');
         },
+
         preview: function () {
 
         }

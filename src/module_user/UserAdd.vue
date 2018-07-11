@@ -18,11 +18,11 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="example-maxlength1">用户名称
+                                <label class="col-xs-4 control-label" for="example-maxlength1">用户名称
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="col-md-6">
-                                    <input ref="inputName" class="js-maxlength form-control" type="text" maxlength="20">
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
                                 </div>
                             </div>
 
@@ -44,33 +44,35 @@
 
 export default {
     data: function () {
-        return { 
+        return {
+            itemData: {}
         }
-    }, 
-    mounted() { 
+    },
+    mounted() {
     },
 
     methods: {
-
+        setItem: function (_item) { 
+        },
         ok: function () {
-
-            let _label = this.$refs.inputName.value;
-            if (!_label.isBlank()) {
-                _label = _label.trim();
+            let _name = this.itemData.name;
+            if (!_name.isBlank()) {
+                _name = _name.trim();
 
                 var params = new URLSearchParams();
-                params.append('label', _label);
+                params.append('name', _name);
 
                 let _this = this;
                 this.$axios.post('users/add', params).then(function (response) {
                     toastr.success("添加用户成功");
+                    _this.$eventHub.$emit('users.updated');
                 }).catch(function (error) {
-                    toastr.error("添加用户异常 [" + error + "]");
+                    toastr.error("添加用户异常 [" + _this.$constant.parseError(error) + "]");
+
                 });
             } else {
                 toastr.error("用户名不合法或为空");
-            } 
-
+            }
         }
     }
 }
