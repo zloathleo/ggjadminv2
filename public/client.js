@@ -5,9 +5,165 @@ var getUrlParam = function (name) {
 };
 
 var _baseURL = 'http://116.62.150.38:8080/ggmanager/api/';
+var _cellHeight = Math.floor(document.body.clientHeight / 10);
+var _cellWidth = Math.floor(document.body.clientWidth / 10);
+var _groupLabel = undefined;
+
+var _parseVideoPlayer = function (gridstack, item) {
+    if (item.camera === true) {
+        var _dom = `
+        <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
+            <param name="movie" value="vgaplayer.swf" />
+            <param name="FlashVars" :value="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" />
+            <param name="play" value="true">
+            <param name="loop" value="true">
+            <param name="bgcolor" value="#ffffff">
+            <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
+                allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" pluginspage="https://get.adobe.com/cn/flashplayer/" />
+        </object>
+        `;
+        gridstack.addWidget($(_dom),
+            item.x, item.y, item.width, item.height, false);
+    } else if (item.video) {
+        var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
+        var _dom = `
+        <video style="background-color: #000000;" controls="controls" loop="loop" muted="muted" autoplay="autoplay" 
+        width="100%" height="100%" src="`+ _videoUrl + `">
+            浏览器不支持
+        </video>
+        `;
+
+        // var _dom = `
+        // <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
+        //     <param name="movie" value="vgaplayer.swf" />
+        //     <param name="FlashVars" :value="url=`+_videoUrl+`" />
+        //     <param name="play" value="true">
+        //     <param name="loop" value="true">
+        //     <param name="bgcolor" value="#ffffff">
+        //     <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
+        //         allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=`+_videoUrl+`" pluginspage="https://get.adobe.com/cn/flashplayer/" />
+        // </object>
+        // `;
+
+        gridstack.addWidget($(_dom),
+            item.x, item.y, item.width, item.height, false);
+    }
+}
+
+var _parseImageLoop = function (gridstack, item) {
+    let _images = item.images;
+
+    var _baseUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
+
+    var itemHtml = "";
+    _images.forEach(function (_image, _index) {
+        if (_index === 0) {
+            itemHtml = itemHtml + "<div class='item active' style='width: 100%; height: 100%;'><img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'> </div>";
+        } else {
+            itemHtml = itemHtml + "<div class='item' style='width: 100%; height: 100%;'><img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'> </div>";
+        }
+    });
+
+    var indicatorsHtml = "";
+    _images.forEach(function (_image, _index) {
+        if (_index === 0) {
+            indicatorsHtml = indicatorsHtml + "<li data-target='#carousel-example-generic' data-slide-to='0' class='active'></li>";
+        } else {
+            indicatorsHtml = indicatorsHtml + "<li data-target='#carousel-example-generic' data-slide-to='" + _index + "' class=''></li>";
+        }
+    });
+    console.log(indicatorsHtml);
+    var _dom = `
+    <div  >
+        <div id="carousel-example-generic" style='width: 100%; height: 100%;'   class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+               `
+        + indicatorsHtml +
+        `
+            </ol>
+            <div class="carousel-inner" role="listbox" style='width: 100%; height: 100%;'> 
+                `
+        + itemHtml +
+        `
+            </div>
+        </div>
+    </div>
+    `;
+    gridstack.addWidget($(_dom),
+        item.x, item.y, item.width, item.height, false);
+
+    setTimeout(function () {
+        $('.carousel').carousel({
+            interval: item.interval * 1000
+        })
+    }, 2000);
+
+}
+
+var _parseTextLoop = function (gridstack, item) {
+    if (item.texts) {
+        var _height = (item.height * _cellHeight) + "px"; 
+
+        var _textList = item.texts.split("\n");
+        var newsHtml = "";
+        _textList.forEach(function (_text, _index) {
+            newsHtml = newsHtml + "<li class='news-item' style='color:#fff'>" + _text + "</li>";
+        });
+
+
+        var _dom = `
+        <ul class="news" style="overflowY:hidden;height:`+ _height + `;width:100%;padding: 20px;">
+                `+ newsHtml + `
+        </ul>
+        `;
+        gridstack.addWidget($(_dom),
+            item.x, item.y, item.width, item.height, false);
+ 
+    } else {
+
+    }
+}
+
+var parsePageJson = function (_content) {
+
+    var _json = JSON.parse(_content);
+
+    var _h = 10;
+    var _w = 12;
+
+    var options = {
+        float: true,
+        staticGrid: true,
+        height: _h,
+        width: _w,
+        verticalMargin: "1px",
+        cellHeight: _cellHeight,
+        oneColumnModeClass:"",
+    };
+    $('.grid-stack').gridstack(options);
+    var gridstack = $('.grid-stack').data('gridstack');
+
+    // $('.grid-stack').on('added', function (event, items) {
+    //     console.log(event);
+    // });
+
+    var items = GridStackUI.Utils.sort(_json);
+    console.log(items);
+
+
+    items.forEach(function (item) {
+        if (item.type == "videoplayer") {
+            _parseVideoPlayer(gridstack, item);
+        } else if (item.type == "imageloop") {
+            _parseImageLoop(gridstack, item);
+        } else if (item.type == "textloop") {
+            _parseTextLoop(gridstack, item);
+        }
+    });
+
+}
 
 window.onload = function () {
-
     var _group = this.getUrlParam("group");
     var _page = this.getUrlParam("page");
 
@@ -16,15 +172,20 @@ window.onload = function () {
         if (_response) {
             var _json = _response.responseJSON;
             console.log(_json);
+            _groupLabel = _json.grouplabel;
+            var _content = _json.content;
+            parsePageJson(_content);
         }
 
     } else if (_page) {
+        // client.html?page=2489C680
         var _response = $.ajax({ url: _baseURL + 'page/' + _page, async: false });
         if (_response) {
             var _json = _response.responseJSON;
-
-            var _content = _json.content;
+            _groupLabel = _json.group;
             console.log(_json);
+            var _content = _json.content;
+            parsePageJson(_content);
         }
     } else {
 
