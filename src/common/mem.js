@@ -34,6 +34,7 @@ export default new Vuex.Store({
         },
         //保存图元属性
         appendGridStackItemCustomProperties: function (state, value) {
+            console.log(value);
             state.gridStackAllItemCustomProperties.set(value.id, value);
         },
         cleanGridStackItemCustomProperties: function (state, value) {

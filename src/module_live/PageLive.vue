@@ -41,6 +41,9 @@ export default {
 
         previewLive: function () {
             // $('#modal-add-live').modal('show');
+            // live_pre.html?name=' + item.label"
+            let _group = this.$mem.state.user.group
+            window.open("live_pre.html?name=" + _group);
         },
         exportLive: function () {
             this.$axios({

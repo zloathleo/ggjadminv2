@@ -58,7 +58,7 @@ export default {
         ok: function () {
             let _name = this.itemData.name;
 
-            if (!_name.isBlank()) {
+            if (_name && !_name.isBlank()) {
                 _name = _name.trim();
 
                 var params = new URLSearchParams();

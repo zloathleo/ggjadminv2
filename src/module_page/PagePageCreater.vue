@@ -25,7 +25,7 @@
 
                 <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 20px',width: maxWidth + 'px', height: (maxHeight - 93) + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
                     <!-- <div :style="{ width: maxWidth + 'px', height: (maxHeight - 100) + 'px' } " /> -->
-                   
+
                     <div id="pageCreater" class="grid-stack" />
                 </div>
             </div>
@@ -96,11 +96,11 @@ export default {
         },
         renderPageData: function (_data) {
             let _content = _data.content;
-            if(!_content){
+            if (!_content) {
                 return;
             }
             let _json = JSON.parse(_content);
-
+            console.log(_json);
             var items = GridStackUI.Utils.sort(_json);
             let _this = this;
             var gridstack = $('#pageCreater').data('gridstack');
@@ -118,6 +118,9 @@ export default {
                         item.x, item.y, item.width, item.height, false);
                     _this.$mem.commit("appendGridStackItemCustomProperties", {
                         "id": item.id,
+                        "interval": item.interval,
+                        "direction": item.direction,
+                        "images": item.images,
                     });
                 } else if (item.type == "textloop") {
                     gridstack.addWidget($('<div data-type="textloop" data-id="' + item.id + '" data-gs-min-width="2" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content" > <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文</label></div></div>'),
@@ -127,7 +130,7 @@ export default {
                         "texts": item.texts
                     });
                 }
-            }); 
+            });
         },
         itemSelectChange: function (data) {
             //dom   type 
@@ -144,7 +147,7 @@ export default {
 
         initGridStack: function () {
             let _h = 10;
-            let _w = 12; 
+            let _w = 12;
 
             var options = {
                 float: true,
@@ -184,7 +187,7 @@ export default {
 
                 let _json = JSON.stringify(_allComponents, null, '    ');
 
-                console.log(_json);  
+                console.log(_json);
 
                 this.initPageData.content = _json;
 
@@ -198,18 +201,30 @@ export default {
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($('<div data-type="videoplayer" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视</label></div></div>'),
                 0, 0, 2, 2, true);
+
+            this.$mem.commit("appendGridStackItemCustomProperties", {
+                "id": _id
+            });
         },
         addImageLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($('<div data-type="imageloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2"><div style="left:1px;right:0px;" class="grid-stack-item-content"> <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图</label></div></div>'),
                 0, 0, 2, 2, true);
+
+            this.$mem.commit("appendGridStackItemCustomProperties", {
+                "id": _id
+            });
         },
         addTextLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($('<div data-type="textloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="1"><div style="left:1px;right:0px;" class="grid-stack-item-content" > <label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文</label></div></div>'),
                 0, 0, 2, 1, true);
+
+            this.$mem.commit("appendGridStackItemCustomProperties", {
+                "id": _id
+            });
         },
     }
 

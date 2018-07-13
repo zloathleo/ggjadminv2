@@ -73,7 +73,7 @@ export default {
             let _brand = this.itemData.brand;
             let _model = this.itemData.model;
 
-            if (!_name.isBlank()) {
+            if (_name && !_name.isBlank()) {
                 _name = _name.trim();
 
                 var params = new URLSearchParams();

@@ -96,7 +96,7 @@ export default {
 
             var stime = $("#inputStartTime").val();
             var etime = $("#inputEndTime").val(); 
-            if (!_name.isBlank()) {
+            if (_name && !_name.isBlank()) {
                 _name = _name.trim();
 
                 var params = new URLSearchParams();

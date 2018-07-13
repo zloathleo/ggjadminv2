@@ -1,5 +1,7 @@
 <template>
     <form class="form-horizontal" onsubmit="return false;">
+        <ImageSelect ref="modalImageSelect" />
+
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">Id</label>
             <div class="col-xs-8">
@@ -7,56 +9,89 @@
             </div>
         </div>
 
-        <!-- <div class="form-group">
-            <label class="col-xs-4 control-label" for="example-masked-date1">图片资源</label>
-            <div class="col-xs-8">
-                <select ref="inputCamera" v-model="inputCameraValue" class="form-control" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                    <option value="NA">NA</option>
-                    <option v-for="(item, index) in cameraData" :value="item.label">{{item.label}}</option>
+        <div class="form-group">
+            <label class="col-xs-4 control-label" for="val-skill">时间间隔</label>
+            <div class="col-xs-6">
+                <select class="form-control" ref="inputInterval">
+                    <option value='3' :selected="getIntervalValue() === '3'">3秒</option>
+                    <option value='5' :selected="getIntervalValue() === '5'">5秒</option>
+                    <option value='7' :selected="getIntervalValue() === '7'">7秒</option>
                 </select>
             </div>
-        </div> -->
+        </div>
+
+        <div class="form-group">
+            <label class="col-xs-4 control-label" for="val-skill">方向</label>
+            <div class="col-xs-6">
+                <select class="form-control" ref="inputDirection">
+                    <option value='h' :selected="getDirection() === 'h'">水平</option>
+                    <option value='v' :selected="getDirection() === 'v'">垂直</option>
+                </select>
+            </div>
+        </div>
 
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">图片资源</label>
             <div class="col-xs-8">
-                <button type="button" class="btn btn-xs btn-primary" v-on:click="showImages">
-                    <i class="fa fa-plus"></i> 添加图片 </button>
-
-                <ul class="list-group">
-                    <li class="list-group-item">图片1</li>
-                    <li class="list-group-item">图片2</li>
-                    <li class="list-group-item">图片3</li>
-                </ul>
+                <button type="button" style="width: 100%;" class="btn btn-sm btn-primary" v-on:click="showImages">选择图片 </button>
             </div>
         </div>
     </form>
 </template>
 
 <script>  
+
+import ImageSelect from './ImageSelect.vue';
 export default {
+    components: { ImageSelect },
     data: function () {
         return {
             elementId: this.$mem.state.gridStackSelectItem.getAttribute("data-id"),
         }
     },
     methods: {
+        getIntervalValue: function () {
+            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
+            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
+            let customPros = _customProperties.get(_gridStackSelectItemId);
+            if (customPros.interval) {
+                return customPros.interval;
+            } else {
+                return "3";
+            }
+        },
+        getDirection: function () {
+            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
+            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
+            let customPros = _customProperties.get(_gridStackSelectItemId);
+            if (customPros.direction) {
+                return customPros.direction;
+            } else {
+                return "h";
+            }
+        },
         save: function () {
-            // let id = this.$refs.inputId.value;
-            // let video = this.$refs.inputVideo.value;
+            let _interval = this.$refs.inputInterval.value;
+            let _direction = this.$refs.inputDirection.value;
 
-            // this.$mem.commit("appendGridStackItemCustomProperties", {
-            //     "id": id,
-            //     "video": video,
-            // });
-            // console.log("id:" + id);
+            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
+            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
+            let customPros = _customProperties.get(_gridStackSelectItemId);
+            if (customPros) {
+                customPros.interval = _interval;
+                customPros.direction = _direction;
+            } else {
+                // this.$mem.commit("appendGridStackItemCustomProperties", {
+                //     "id": this.$mem.state.gridStackSelectItemId,
+                //     "interval": _interval,
+                // });
+            }
+
+            console.log(_customProperties.get(_gridStackSelectItemId));
         },
         showImages: function () {
-            // $('#modal-image').modal({
-            //     show: true
-            // }, {
-            //         input: this.$refs.inputVideo
-            //     }); 
+            this.$refs.modalImageSelect.setItem();
+            $('#modal-imageselect').modal('show');
         }
     }
 }

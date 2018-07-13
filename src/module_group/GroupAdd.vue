@@ -115,7 +115,7 @@ export default {
             let _height = this.itemData.height;
             let _operator = this.itemData.user;
 
-            if (_name.isBlank()) {
+            if (_name && _name.isBlank()) {
                 toastr.error("输入名称不合法或为空");
                 return;
             }

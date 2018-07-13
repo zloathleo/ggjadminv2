@@ -44,7 +44,7 @@ export default {
         },
         ok: function () {
             let _name = this.itemData.name;
-            if (!_name.isBlank()) {
+            if (_name && !_name.isBlank()) {
                 let _this = this;
                 this.$axios.post('users/' + _name + '/delete').then(function (response) {
                     toastr.success("删除用户成功");

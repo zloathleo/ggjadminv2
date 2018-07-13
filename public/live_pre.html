@@ -9,20 +9,18 @@
 </head>
 
 <body>
-    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540001" width="100%" height="257.4px">
-        <param name="movie" value="vgaplayer.swf">
-        <param id="swfobjecturl" name="FlashVars">
-        <!-- <param id="swfobjecturl" name="FlashVars" value="url=rtmp://116.62.150.38:1935/live/webcam"> -->
+    <!-- <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540001" width="100%" height="257.4px">
+        <param name="movie" value="vgaplayer.swf"> 
+        <param name="FlashVars" value="url=rtmp://116.62.150.38:1935/live/A8788690">
         <param name="play" value="true">
         <param name="loop" value="true">
         <param name="bgcolor" value="#ffffff">
         <embed id="swfobjectembed" src="vgaplayer.swf" width="100%" height="257.4px" allowscriptaccess="sameDomain" loop="loop" bgcolor="#ffffff"
-            allowfullscreen="true" type="application/x-shockwave-flash" flashvars="url=rtmp://116.62.150.38:1935/live/webcam"
+            flashvars="url=rtmp://116.62.150.38:1935/live/A8788690" allowfullscreen="true" type="application/x-shockwave-flash"
             pluginspage="https://get.adobe.com/cn/flashplayer/">
-    </object>
+    </object> -->
 
-    <script>
-
+    <script> 
         var getUrlParam = function (name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
             var r = window.location.search.substr(1).match(reg); //匹配目标参数
@@ -34,10 +32,43 @@
             var liveurl = "rtmp://116.62.150.38:1935/live/" + _name;
             console.log(liveurl);
 
-            document.getElementById("swfobjecturl").value = "url=" + liveurl;
+            var _object = document.createElement("object");
+            _object.setAttribute("classid", "clsid:D27CDB6E-AE6D-11cf-96B8-4445535400122");
+            _object.setAttribute("width", "100");
+            _object.setAttribute("height", "300px");
 
-            document.getElementById("swfobjectembed").flashvars = "url=" + liveurl;
+            var _param = document.createElement("param");
+            _param.setAttribute("name", "movie");
+            _param.setAttribute("value", "vgaplayer.swf");
+            _object.appendChild(_param);
 
+            var _param = document.createElement("param");
+            _param.setAttribute("name", "loop");
+            _param.setAttribute("value", "true");
+            _object.appendChild(_param);
+
+            var _param = document.createElement("param");
+            _param.setAttribute("name", "FlashVars");
+            _param.setAttribute("value", "url=" + liveurl);
+            _object.appendChild(_param);
+
+
+            var _embed = document.createElement("embed");
+            _embed.setAttribute("src", "vgaplayer.swf");
+            _embed.setAttribute("width", "100%");
+            _embed.setAttribute("height", "300px");
+            _embed.setAttribute("loop", "loop");
+            _embed.setAttribute("flashvars", "url=" + liveurl);
+            _embed.setAttribute("allowfullscreen", "true");
+            _embed.setAttribute("type", "application/x-shockwave-flash");
+            _embed.setAttribute("pluginspage", "https://get.adobe.com/cn/flashplayer/");
+            _object.appendChild(_embed);
+
+            document.body.appendChild(_object);
+
+            // document.getElementById("swfobjecturl").value = "url=" + liveurl;
+
+            // document.getElementById("swfobjectembed").setAttribute("flashvars", "url=" + liveurl);
         }
     </script>
 </body>

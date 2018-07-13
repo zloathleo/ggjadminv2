@@ -1,5 +1,6 @@
 <template>
     <form class="form-horizontal" onsubmit="return false;">
+        <VideoSelect ref="modalVideoSelect" />
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">Id</label>
             <div class="col-xs-8">
@@ -10,8 +11,8 @@
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">本地视频</label>
             <div class="col-xs-8">
-                <button class="btn btn-sm btn-primary" ref="inputVideo" v-on:click="showVideo">
-                    {{inputVideoValue ? inputVideoValue : 'NA'}}
+                <button class="btn btn-sm btn-primary" ref="inputVideo" style="width: 100%;" v-on:click="showVideo">
+                    选择视频文件
                 </button>
             </div>
         </div>
@@ -19,19 +20,21 @@
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">在线视频</label>
             <div class="col-xs-8">
-                <select ref="inputCamera" v-model="inputCameraValue" class="form-control" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                    <option value="NA">NA</option>
-                    <option v-for="(item, index) in cameraData" :value="item.label">{{item.label}}</option>
-                </select>
+                <label class="css-input switch switch-sm switch-primary">
+                    <input ref="inputCamera" type="checkbox" :checked="isCameraCheck()">
+                    <span></span>
+                </label>
             </div>
         </div>
     </form>
 </template>
 
 <script>  
-export default {
-    data: function () {
 
+import VideoSelect from './VideoSelect.vue';
+export default {
+    components: { VideoSelect },
+    data: function () {
         let _elementId = this.$mem.state.gridStackSelectItemId;
 
         let cusPros = this.$mem.state.gridStackAllItemCustomProperties.get(_elementId);
@@ -55,45 +58,67 @@ export default {
     },
 
     mounted() {
-        this.initCamera();
+        // this.initCamera();
     },
 
     methods: {
-        initCamera: function () {
-            let _this = this;
-            this.$axios.get('/zygl/zb').then(function (response) {
-                let _data = response.data;
-                if (_data) {
-                    _this.cameraData = _data.rows;
-                }
-            }).catch(function (error) {
-                console.log(error);
-            });
+        isCameraCheck: function () {
+            console.log("isCameraCheck");
+            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
+            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
+            let customPros = _customProperties.get(_gridStackSelectItemId);
+            if (customPros) {
+                return customPros.camera;
+            }
+            return false;
         },
+        // initCamera: function () {
+        //     let _this = this;
+        //     // this.$axios.get('/zygl/zb').then(function (response) {
+        //     //     let _data = response.data;
+        //     //     if (_data) {
+        //     //         _this.cameraData = _data.rows;
+        //     //     }
+        //     // }).catch(function (error) {
+        //     //     console.log(error);
+        //     // });
+        // },
 
         save: function () {
-            let id = this.$refs.inputId.value;
-            let video = this.$refs.inputVideo.innerText;
-            let camera = this.$refs.inputCamera.value;
+            // let id = this.$refs.inputId.value;
+            // let video = this.$refs.inputVideo.innerText;
+            let camera = this.$refs.inputCamera.checked;
 
-            if (video == "NA") {
-                video = undefined;
+            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
+            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
+            let customPros = _customProperties.get(_gridStackSelectItemId);
+            if (customPros) {
+                customPros.camera = camera;
+            } else {
+                // this.$mem.commit("appendGridStackItemCustomProperties", {
+                //     "id": this.$mem.state.gridStackSelectItemId,
+                //     "interval": _interval,
+                // });
             }
-            if (camera == "NA") {
-                camera = undefined;
-            }
-            this.$mem.commit("appendGridStackItemCustomProperties", {
-                "id": id,
-                "video": video,
-                "camera": camera,
-            });
+
+            console.log(_customProperties.get(_gridStackSelectItemId));
+
+            // if (video == "NA") {
+            //     video = undefined;
+            // }
+            // // if (camera == "NA") {
+            // //     camera = undefined;
+            // // }
+            // // console.log
+            // this.$mem.commit("appendGridStackItemCustomProperties", {
+            //     "id": id,
+            //     "video": video,
+            //     "camera": camera,
+            // });
         },
         showVideo: function () {
-            $('#modal-videoSelect').modal({
-                show: true
-            }, {
-                    input: this.$refs.inputVideo
-                });
+            this.$refs.modalVideoSelect.setItem();
+            $('#modal-videoselect').modal('show');
         }
     }
 }
