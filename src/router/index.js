@@ -10,6 +10,7 @@ import PageResource from '../module_resource/PageResource.vue';
 import PageDevice from '../module_device/PageDevice.vue';
 import PageLive from '../module_live/PageLive.vue';
 import PageMsg from '../module_msg/PageMsg.vue';
+import PagePublicAddr from '../module_group/PagePublicAddr.vue';
 
 Vue.use(VueRouter);
 
@@ -25,6 +26,6 @@ export default new VueRouter({
     { name: 'page_device', path: '/page_device', component: PageDevice },
     { name: 'page_live', path: '/page_live', component: PageLive },
     { name: 'page_msg', path: '/page_msg', component: PageMsg },
-
+    { name: 'page_publicaddr', path: '/page_publicaddr', component: PagePublicAddr },
   ]
 })

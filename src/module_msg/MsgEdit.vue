@@ -39,8 +39,8 @@
                             <div class="form-group">
                                 <label class="col-xs-4 control-label">生效时间 </label>
                                 <div class="col-xs-6">
-                                    <div class="js-datetimepicker input-group date">
-                                        <input id="inputStartTime" class="form-control" type="text" placeholder="选择生效时间..">
+                                    <div class="js-datetimepicker js-datetimepicker-edit-start input-group date">
+                                        <input id="inputStartTime2" class="form-control" :value="$constant.parseDateTime(itemData.startTime)" type="text" placeholder="选择生效时间..">
                                         <span class="input-group-addon">
                                             <span class="fa fa-calendar"></span>
                                         </span>
@@ -53,7 +53,7 @@
                                 <label class="col-xs-4 control-label">结束时间 </label>
                                 <div class="col-xs-6">
                                     <div class="js-datetimepicker input-group date">
-                                        <input id="inputEndTime" class="form-control" type="text" placeholder="选择结束时间..">
+                                        <input id="inputEndTime2" class="form-control" :value="$constant.parseDateTime(itemData.endTime)" type="text" placeholder="选择结束时间..">
                                         <span class="input-group-addon">
                                             <span class="fa fa-calendar"></span>
                                         </span>
@@ -85,6 +85,7 @@ export default {
         }
     },
     mounted() {
+
     },
 
     methods: {
@@ -103,14 +104,23 @@ export default {
             let _name = this.itemData.name;
             let _type = this.itemData.type;
 
+            // let _inputStartTime = this.$refs.inputStartTime.value; 
+            // let _inputEndTime = this.$refs.inputEndTime.value;
+
+
+            var stime = $("#inputStartTime2").val();
+            var etime = $("#inputEndTime2").val();
+
             var params = new URLSearchParams();
             params.append('name', _name);
             params.append('type', _type);
+            params.append('startTime', stime);
+            params.append('endTime', etime);
 
             let _this = this;
             this.$axios.post('messages/' + _label + '/update', params).then(function (response) {
                 toastr.success("修改消息成功");
-                // _this.$eventHub.$emit('messages.updated');
+                _this.$eventHub.$emit('messages.updated');
             }).catch(function (error) {
                 toastr.error("修改数据异常 [" + _this.$constant.parseError(error) + "]");
             });

@@ -35,6 +35,47 @@
             background: #000;
         }
 
+        .servermsg {
+            white-space: nowrap;
+            display: block;
+            width: 100%;
+            text-align: left;
+            position: absolute;
+            overflow: hidden;
+            -webkit-animation: servermsg 10s linear infinite;
+            animation: servermsg 10s linear infinite;
+            top: 1rem;
+            font-weight: bold;
+            color: #ea192d;
+        }
+
+        @keyframes servermsg {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .carousel-vertical .carousel-inner .carousel-item-next.carousel-item-left,
+        .carousel-vertical .carousel-inner .carousel-item-prev.carousel-item-right {
+            -webkit-transform: translateY(0);
+            transform: translateY(0);
+        }
+
+        .carousel-vertical .carousel-inner .active.carousel-item-left,
+        .carousel-vertical .carousel-inner .carousel-item-prev {
+            -webkit-transform: translateY(-100%);
+            transform: translateY(-100%);
+        }
+
+        .carousel-vertical .carousel-inner .active.carousel-item-right,
+        .carousel-vertical .carousel-inner .carousel-item-next {
+            -webkit-transform: translateY(100%);
+            transform: translateY(100%);
+        }
+
         .grid-stack {
             background: #000;
         }
@@ -51,6 +92,9 @@
 <body>
     <div class="container-fluid" style="padding: 0px;">
         <div class="grid-stack">
+        </div>
+        <div class="servermsg">
+            <h4 id="message"></h4>
         </div>
     </div>
 

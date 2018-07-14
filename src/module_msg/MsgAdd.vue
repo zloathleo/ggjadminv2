@@ -102,8 +102,8 @@ export default {
                 var params = new URLSearchParams();
                 params.append('type', this.itemData.type);
                 params.append('name', _name);
-                // params.append('startTime', stime);
-                // params.append('endTime', etime);
+                params.append('startTime', stime);
+                params.append('endTime', etime);
 
                 let _this = this;
                 this.$axios.post('messages/add', params).then(function (response) {

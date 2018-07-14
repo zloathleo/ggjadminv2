@@ -30,11 +30,11 @@
                 <tbody>
                     <tr v-for="(item, index) in tableData">
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center">{{item.type}}</td>
+                        <td class="text-center">{{item.type === 'sound' ? '语音' :'文字'}}</td>
                         <td class="text-center">{{item.name}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.startTime)}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.endTime)}}</td>
-                        <td class="text-center">{{$constant.parseMsgState(1)}}</td>
+                        <td class="text-center">{{$constant.parseMsgState(item.status)}}</td>
                         <td class="text-center">
                             <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item)">编辑</button>
                             <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除</button>

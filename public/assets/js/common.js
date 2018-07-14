@@ -160,11 +160,8 @@ var App = function () {
         jQuery('.js-datetimepicker').each(function () {
             var $input = jQuery(this);
 
-            $input.datetimepicker({
-                // language: 'zh-CN',
-                // autoclose: true,
-                format: 'YYYY-MM-DD HH:mm:ss',
-                // useCurrent: $input.data('use-current') ? $input.data('use-current') : false,
+            $input.datetimepicker({ 
+                format: 'YYYY-MM-DD HH:mm:ss', 
                 locale: moment.locale('zh-cn'),
                 showTodayButton: true,
                 showClear: true,

@@ -75,7 +75,7 @@ var _parseImageLoop = function (gridstack, item) {
     console.log(indicatorsHtml);
     var _dom = `
     <div  >
-        <div id="carousel-example-generic" style='width: 100%; height: 100%;'   class="carousel slide" data-ride="carousel">
+        <div id="carousel-example-generic" style='width: 100%; height: 100%;'   class="carousel slide carousel-vertical" data-ride="carousel">
             <ol class="carousel-indicators">
                `
         + indicatorsHtml +
@@ -102,7 +102,7 @@ var _parseImageLoop = function (gridstack, item) {
 
 var _parseTextLoop = function (gridstack, item) {
     if (item.texts) {
-        var _height = (item.height * _cellHeight) + "px"; 
+        var _height = (item.height * _cellHeight) + "px";
 
         var _textList = item.texts.split("\n");
         var newsHtml = "";
@@ -118,7 +118,7 @@ var _parseTextLoop = function (gridstack, item) {
         `;
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
- 
+
     } else {
 
     }
@@ -138,7 +138,7 @@ var parsePageJson = function (_content) {
         width: _w,
         verticalMargin: "1px",
         cellHeight: _cellHeight,
-        oneColumnModeClass:"",
+        oneColumnModeClass: "",
     };
     $('.grid-stack').gridstack(options);
     var gridstack = $('.grid-stack').data('gridstack');
@@ -163,40 +163,76 @@ var parsePageJson = function (_content) {
 
 }
 
-window.onload = function () {
-    var _group = this.getUrlParam("group");
-    var _page = this.getUrlParam("page");
+var _lastJsonUpdateTime = 0;
+var _group = this.getUrlParam("group");
+var _page = this.getUrlParam("page");
 
+var initPage = function () {
     if (_group) {
         let _response = $.ajax({ url: _baseURL + 'group/' + _group, async: false });
         if (_response) {
             var _json = _response.responseJSON;
             console.log(_json);
-            _groupLabel = _json.grouplabel;
+            _groupLabel = _json.group;
             var _content = _json.content;
+            _lastJsonUpdateTime = _json.updateTime;
             parsePageJson(_content);
         }
-
     } else if (_page) {
-        // client.html?page=2489C680
+        // client.html?page=2489C680  
         var _response = $.ajax({ url: _baseURL + 'page/' + _page, async: false });
         if (_response) {
             var _json = _response.responseJSON;
             _groupLabel = _json.group;
             console.log(_json);
             var _content = _json.content;
+            _lastJsonUpdateTime = _json.updateTime;
             parsePageJson(_content);
         }
     } else {
 
     }
+}
 
+var _checkPage = function () {
+    // if (_group) {
+    //     let _response = $.ajax({ url: _baseURL + 'group/' + _group, async: false });
+    //     if (_response) {
+    //         var _json = _response.responseJSON;
+    //         if (_json.updateTime !== _lastJsonUpdateTime) {
+    //             location.reload();
+    //         }
+    //     }
+    // } else 
+    if (_page) {
 
+        var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel + "/messages", async: false });
+        if (_response) {
+            var _json = _response.responseJSON;
+            var _rows = _json.rows;
+            if (_rows && _rows.length > 0) {
+                var _message = _rows[0];
+                var content = _message.name;
+                document.getElementById("message").textContent = content;
+            } else {
+                document.getElementById("message").textContent = "";
+            }
+        }
 
-    // var liveurl = "rtmp://116.62.150.38:1935/live/" + _name;
-    // console.log(liveurl);
+        // client.html?page=2489C680
+        var _response = $.ajax({ url: _baseURL + 'page/' + _page, async: false });
+        if (_response) {
+            var _json = _response.responseJSON;
+            if (_json.updateTime !== _lastJsonUpdateTime) {
+                location.reload();
+            }
+        }
+    } else {
 
-    // document.getElementById("swfobjecturl").value = "url=" + liveurl;
+    }
+}
 
-    // document.getElementById("swfobjectembed").flashvars = "url=" + liveurl;
+window.onload = function () {
+    initPage();
+    setInterval(_checkPage, 6000);
 }

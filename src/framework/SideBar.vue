@@ -61,8 +61,14 @@
                                 <i class="si si-camcorder"></i>
                                 <span class="sidebar-mini-hide">直播管理</span>
                             </a>
-                        </li> 
-                        
+                        </li>
+                        <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_publicaddr') }" v-on:click="clickItem('page_publicaddr')">
+                                <i class="si si-camcorder"></i>
+                                <span class="sidebar-mini-hide">发布地址</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
                 <!-- END Side Content -->
