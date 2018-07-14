@@ -53,6 +53,7 @@ var _parseVideoPlayer = function (gridstack, item) {
 var _parseImageLoop = function (gridstack, item) {
     let _images = item.images;
 
+    if(!_images || _images.length == 0) return;
     var _baseUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
 
     var itemHtml = "";
@@ -112,7 +113,7 @@ var _parseTextLoop = function (gridstack, item) {
 
 
         var _dom = `
-        <ul class="news" style="overflowY:hidden;height:`+ _height + `;width:100%;padding: 20px;">
+        <ul class="news" style="overflowY:hidden;height:`+ _height + `;padding: 20px;">
                 `+ newsHtml + `
         </ul>
         `;
@@ -195,30 +196,28 @@ var initPage = function () {
 }
 
 var _checkPage = function () {
-    // if (_group) {
-    //     let _response = $.ajax({ url: _baseURL + 'group/' + _group, async: false });
-    //     if (_response) {
-    //         var _json = _response.responseJSON;
-    //         if (_json.updateTime !== _lastJsonUpdateTime) {
-    //             location.reload();
-    //         }
-    //     }
-    // } else 
-    if (_page) {
-
-        var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel + "/messages", async: false });
+    var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel + "/messages", async: false });
+    if (_response) {
+        var _json = _response.responseJSON;
+        var _rows = _json.rows;
+        if (_rows && _rows.length > 0) {
+            var _message = _rows[0];
+            var content = _message.name;
+            document.getElementById("message").textContent = content;
+        } else {
+            document.getElementById("message").textContent = "";
+        }
+    }
+    
+    if (_group) {
+        let _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel, async: false });
         if (_response) {
             var _json = _response.responseJSON;
-            var _rows = _json.rows;
-            if (_rows && _rows.length > 0) {
-                var _message = _rows[0];
-                var content = _message.name;
-                document.getElementById("message").textContent = content;
-            } else {
-                document.getElementById("message").textContent = "";
+            if (_json.updateTime !== _lastJsonUpdateTime) {
+                location.reload();
             }
         }
-
+    } else if (_page) {  
         // client.html?page=2489C680
         var _response = $.ajax({ url: _baseURL + 'page/' + _page, async: false });
         if (_response) {

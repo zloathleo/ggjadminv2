@@ -40,7 +40,7 @@
                         <td class="text-center">{{item.user}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.updateTime)}}</td>
                         <td class="text-center">
-                            <a class="btn btn-xs btn-info" :href="'http://116.62.150.38:8080/server/client.html?page=' + item.label" target="_blank">预览
+                            <a class="btn btn-xs btn-info" :href="'client.html?page=' + item.label" target="_blank">预览
                             </a>
                         </td>
                         <td class="text-center">
