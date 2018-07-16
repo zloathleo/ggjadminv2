@@ -11,19 +11,53 @@ var _groupLabel = undefined;
 
 var _parseVideoPlayer = function (gridstack, item) {
     if (item.camera === true) {
+        var _videoUrl = "http://116.62.150.38:7001/live/" + _groupLabel + ".flv";
+        console.log(_videoUrl);
         var _dom = `
-        <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
-            <param name="movie" value="vgaplayer.swf" />
-            <param name="FlashVars" :value="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" />
-            <param name="play" value="true">
-            <param name="loop" value="true">
-            <param name="bgcolor" value="#ffffff">
-            <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
-                allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" pluginspage="https://get.adobe.com/cn/flashplayer/" />
-        </object>
-        `;
+          <video id="video1" class="video-js vjs-default-skin" width="640" height="480" data-setup='{"controls" : true, "autoplay" : true, "preload" : "auto"}'>
+             <source src="`+ _videoUrl + `" type="video/x-flv">
+            </video>  
+            `;
+
+        // var _dom = `
+        // <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
+        //     <param name="movie" value="vgaplayer.swf" />
+        //     <param name="FlashVars" :value="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" />
+        //     <param name="play" value="true">
+        //     <param name="loop" value="true">
+        //     <param name="bgcolor" value="#ffffff">
+        //     <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
+        //         allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" pluginspage="https://get.adobe.com/cn/flashplayer/" />
+        // </object>
+        // `;
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
+
+        setTimeout(function () {
+            var videoElement = document.getElementById("video1");
+            if (flvjs.isSupported() && videoElement) {
+                var _player = flvjs.createPlayer({
+                    type: 'flv',
+                    isLive: true,//<====加个这个 
+                    // hasAudio: false,
+                    enableWorker: true,
+                    autoCleanupSourceBuffer: true,//对SourceBuffer进行自动清理
+                    // autoCleanupMaxBackwardDuration: 60,//当后向缓冲区持续时间超过此值（以秒为单位）时，为SourceBuffer执行自动清理
+                    // autoCleanupMinBackwardDuration: 40,
+                    url: _videoUrl,//<==自行修改
+
+                });
+                _player.attachMediaElement(videoElement);
+                _player.load(); //加载 
+
+                setTimeout(function () {
+                    console.log(_player);
+                    _player.play();
+                }, 1500);
+
+            }
+        }, 1500);
+
     } else if (item.video) {
         var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
         var _dom = `
@@ -53,7 +87,7 @@ var _parseVideoPlayer = function (gridstack, item) {
 var _parseImageLoop = function (gridstack, item) {
     let _images = item.images;
 
-    if(!_images || _images.length == 0) return;
+    if (!_images || _images.length == 0) return;
     var _baseUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
 
     var itemHtml = "";
@@ -208,7 +242,7 @@ var _checkPage = function () {
             document.getElementById("message").textContent = "";
         }
     }
-    
+
     if (_group) {
         let _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel, async: false });
         if (_response) {
@@ -217,7 +251,7 @@ var _checkPage = function () {
                 location.reload();
             }
         }
-    } else if (_page) {  
+    } else if (_page) {
         // client.html?page=2489C680
         var _response = $.ajax({ url: _baseURL + 'page/' + _page, async: false });
         if (_response) {
