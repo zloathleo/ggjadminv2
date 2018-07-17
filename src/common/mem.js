@@ -32,10 +32,18 @@ export default new Vuex.Store({
             state.gridStackSelectItem = value.dom;
             state.gridStackSelectItemId = value.id;
         },
+        clearGridStackItemSelected: function (state) {
+            state.gridStackSelectItemType = 0;
+            state.gridStackSelectItem = undefined;
+            state.gridStackSelectItemId = undefined;
+        },
         //保存图元属性
-        appendGridStackItemCustomProperties: function (state, value) {
-            console.log(value);
+        appendGridStackItemCustomProperties: function (state, value) { 
             state.gridStackAllItemCustomProperties.set(value.id, value);
+        },
+        //remove
+        removeGridStackItemCustomProperties: function (state, _id) { 
+            state.gridStackAllItemCustomProperties.delete(_id);
         },
         cleanGridStackItemCustomProperties: function (state, value) {
             state.gridStackAllItemCustomProperties.clear();

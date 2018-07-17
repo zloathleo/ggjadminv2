@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Storejs from 'store';
 
+import 'url-search-params-polyfill';
+
 import './common/initjs';
 import Router from './router';
 import Constant from './common/constant';
@@ -16,7 +18,7 @@ let _user = Storejs.get("user");
 if (_user) {
     if (_user.type && _user.token) {
         Mem.state.user = _user;
-        Axios.defaults.headers.accesstoken = _user.token; 
+        Axios.defaults.headers.accesstoken = _user.token;
     } else {
         window.location.href = "login.html";
     }
@@ -29,14 +31,41 @@ toastr.options.positionClass = "toast-top-center";
 toastr.options.timeOut = 3000;
 toastr.options.extendedTimeOut = 1000;
 
+var _closePage = function () {
+    Storejs.remove('user');
+}
+
 //事件配置
 var vueEventHub = new Vue();
-window.gridStackSelectItemCallback = function (_name) { 
-    let _dom = window.event.target.parentNode.parentNode;
+window.gridStackSelectItemCallback = function (_name) {
+    event.stopPropagation();
+    event.preventDefault();
+    let _target = window.event.target;
+    console.log(_target);
+
+    let _dom = _target.parentNode.parentNode;
+    console.log("selected gridStack item:" + _name);
     vueEventHub.$emit('gridStackSelectItemChange', {
         dom: _dom,
         type: _name
     });
+
+
+}
+window.gridStackRemoveItemCallback = function (_itemId) {
+    event.stopPropagation();
+    event.preventDefault();
+    let _target = window.event.target;
+    console.log(_target);
+
+    let _dom = _target.parentNode.parentNode.parentNode.parentNode;
+    console.log("remove gridStack item:" + _itemId);
+    vueEventHub.$emit('gridStackRemoveItem', {
+        dom: _dom,
+        itemId: _itemId,
+    });
+
+
 }
 
 Vue.prototype.$mem = Mem;

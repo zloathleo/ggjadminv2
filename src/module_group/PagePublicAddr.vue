@@ -16,15 +16,13 @@
 export default {
     data: function () {
         return {
-            publicUrl: 'client.html?group=' + this.$mem.state.user.group
+            publicUrl: 'http://116.62.150.38:8080/server/' + 'client.html?group=' + this.$mem.state.user.group
         }
     },
-    mounted() {
-
+    mounted() { 
     },
 
-    methods: {
-
+    methods: { 
     }
 }
 </script>

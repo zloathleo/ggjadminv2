@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -16,7 +17,7 @@ module.exports = {
   },
 
   externals: {
-    'vue': 'Vue',  
+    'vue': 'Vue',
   },
 
   resolve: {
@@ -43,8 +44,8 @@ module.exports = {
           use: ["css-loader"]
         })
       },
+      { test: /\.(eot|otf|woff|woff2|ttf|svg)(\?\S*)?$/, loader: 'file-loader', options: { limit: 1 } },
 
-      { test: /\.(eot|otf|woff|woff2|ttf|svg)(\?\S*)?$/, loader: 'file-loader', options: { limit: 1 } }
     ]
   },
 
@@ -55,6 +56,22 @@ module.exports = {
   plugins: [
     //生成css
     new ExtractTextPlugin("index.css"),
+
+    new HtmlWebpackPlugin({
+      chunks: ['login'],
+      template: __dirname + '/public/ejs/login.ejs',
+      filename: __dirname + '/public/login.html', 
+      hash: true,
+      inject: true,
+    }),
+
+    new HtmlWebpackPlugin({
+      chunks: ['index'],
+      template: __dirname + '/public/ejs/index.ejs',
+      filename: __dirname + '/public/index.html', 
+      hash: true,
+      inject: true,
+    }),
 
     // new webpack.optimize.UglifyJsPlugin({
     //   //生成环境启用js压缩

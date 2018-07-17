@@ -10,9 +10,9 @@
 </template>
 
 <script> 
-import { Navbar, MainContent, Sidebar, ModalLayer } from '../framework';
+import { Navbar, MainContent, Sidebar } from '../framework';
 export default {
   name: 'Root',
-  components: { Navbar, MainContent, Sidebar, ModalLayer },
+  components: { Navbar, MainContent, Sidebar },
 }
 </script>

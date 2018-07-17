@@ -37,14 +37,18 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">屏幕宽度</label>
+                                <label class="col-xs-4 control-label">屏幕宽度
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.width">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">屏幕高度</label>
+                                <label class="col-xs-4 control-label">屏幕高度
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.height">
                                 </div>
@@ -95,31 +99,48 @@ export default {
             this.$axios.get('/groups/' + _item.label).then(function (response) {
                 let _data = response.data;
                 _this.itemData = _data;
+
+                _this.$axios.get('/users', {
+                    params: {
+                        filtergroup: true
+                    }
+                }).then(function (response) {
+                    let _data = response.data;
+                    if (_data) { 
+                        _this.tableData = _data.rows;
+                        _this.tableData.push({
+                            "name": _this.itemData.user
+                        }); 
+                    }
+                }).catch(function (error) {
+                    console.error(error);
+                    toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
+                });
+
             }).catch(function (error) {
+                console.error(error);
                 toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
             });
 
-            this.$axios.get('/users', {
-                params: {
-                    filtergroup: true
-                }
-            }).then(function (response) {
-                let _data = response.data;
-                if (_data) {
-                    _this.tableData = _data.rows;
-                }
-            }).catch(function (error) {
-                toastr.error("获取数据异常 [" + _this.$constant.parseError(error) + "]");
-            });
+
         },
 
         ok: function () {
 
             let _label = this.itemData.label;
             let _type = this.itemData.type;
-            let _width = this.itemData.width;
-            let _height = this.itemData.height;
+            let _width = this.itemData.width + "";
+            let _height = this.itemData.height + "";
             let _operator = this.itemData.user;
+
+            if (!_width || _width.isBlank() || parseInt(_width) <= 0) {
+                toastr.error("输入宽度不合法或为空");
+                return;
+            }
+            if (!_height || _height.isBlank() || parseInt(_height) <= 0) {
+                toastr.error("输入高度不合法或为空");
+                return;
+            }
 
             var params = new URLSearchParams();
             params.append('type', _type);

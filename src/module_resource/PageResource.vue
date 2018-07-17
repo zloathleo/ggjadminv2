@@ -15,7 +15,7 @@
 
         <div class="block-content">
             <div class="row items-push js-gallery">
-                <div class="col-sm-4 col-md-2 animated fadeIn" v-for="(item, index) in tableData">
+                <div class="col-sm-4 col-md-2 col-lg-1 animated fadeIn" v-for="(item, index) in tableData">
                     <a class="img-container" data-fancybox="gallery" :href="$axios.defaults.baseURL + 'ggmanager_resources/' + $mem.state.user.group + '/' + item.name">
                         <!-- <img src="small_1.jpg"> -->
                         <img class="img-responsive" :src="$axios.defaults.baseURL + 'ggmanager_resources/' + $mem.state.user.group + '/'+ item.thumbnail" alt="">

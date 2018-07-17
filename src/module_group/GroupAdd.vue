@@ -37,14 +37,18 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕宽度</label>
+                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕宽度
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.width">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕高度</label>
+                                <label class="col-xs-4 control-label" for="example-maxlength1">屏幕高度
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.height">
                                 </div>
@@ -115,8 +119,16 @@ export default {
             let _height = this.itemData.height;
             let _operator = this.itemData.user;
 
-            if (_name && _name.isBlank()) {
+            if (!_name || _name.isBlank()) {
                 toastr.error("输入名称不合法或为空");
+                return;
+            }
+            if (!_width || _width.isBlank() || parseInt(_width) <= 0) {
+                toastr.error("输入宽度不合法或为空");
+                return;
+            }
+            if (!_height || _height.isBlank() || parseInt(_height) <= 0) {
+                toastr.error("输入高度不合法或为空");
                 return;
             }
 

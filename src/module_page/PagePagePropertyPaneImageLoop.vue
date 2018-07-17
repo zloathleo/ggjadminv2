@@ -10,6 +10,19 @@
         </div>
 
         <div class="form-group">
+            <label class="col-xs-4 control-label" for="example-masked-date1">宽度</label>
+            <div class="col-xs-8">
+                <input ref="inputId" class="form-control" type="text" :value="getWidthValue()" disabled="disabled">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-4 control-label" for="example-masked-date1">高度</label>
+            <div class="col-xs-8">
+                <input ref="inputId" class="form-control" type="text" :value="getHeightValue()" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-xs-4 control-label" for="val-skill">时间间隔</label>
             <div class="col-xs-6">
                 <select class="form-control" ref="inputInterval">
@@ -33,7 +46,12 @@
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">图片资源</label>
             <div class="col-xs-8">
-                <button type="button" style="width: 100%;" class="btn btn-sm btn-primary" v-on:click="showImages">选择图片 </button>
+
+                <ul class="list-group">
+                    <li class="list-group-item active cursor-pointer" style="text-align: center;" v-on:click="showImages">选择图片</li>
+                    <li class="list-group-item" v-for="_image in selectedImages">{{_image}}</li>
+                </ul>
+
             </div>
         </div>
     </form>
@@ -45,15 +63,39 @@ import ImageSelect from './ImageSelect.vue';
 export default {
     components: { ImageSelect },
     data: function () {
+        let _elementId = this.$mem.state.gridStackSelectItemId;
+        let customPros = this.$mem.state.gridStackAllItemCustomProperties.get(_elementId);
+
+        let _selectedImages = (customPros && customPros.images) ? customPros.images : [];
         return {
-            elementId: this.$mem.state.gridStackSelectItem.getAttribute("data-id"),
+            elementId: _elementId,
+            selectedImages: _selectedImages,
         }
     },
     methods: {
-        getIntervalValue: function () {
+        getCustomPros: function () {
             let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
             let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
-            let customPros = _customProperties.get(_gridStackSelectItemId);
+            return _customProperties.get(_gridStackSelectItemId);
+        },
+        getWidthValue: function () {
+            let customPros = this.getCustomPros();
+            if (customPros.width) {
+                return parseInt(customPros.width / 12 * this.$mem.state.groupInfo.width);
+            } else {
+                return 0;
+            }
+        },
+        getHeightValue: function () {
+            let customPros = this.getCustomPros();
+            if (customPros.height) {
+                return parseInt(customPros.height / 10 * this.$mem.state.groupInfo.height);
+            } else {
+                return 0;
+            }
+        },
+        getIntervalValue: function () {
+            let customPros = this.getCustomPros();
             if (customPros.interval) {
                 return customPros.interval;
             } else {
@@ -61,9 +103,7 @@ export default {
             }
         },
         getDirection: function () {
-            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
-            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
-            let customPros = _customProperties.get(_gridStackSelectItemId);
+            let customPros = this.getCustomPros();
             if (customPros.direction) {
                 return customPros.direction;
             } else {
@@ -74,9 +114,7 @@ export default {
             let _interval = this.$refs.inputInterval.value;
             let _direction = this.$refs.inputDirection.value;
 
-            let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
-            let _gridStackSelectItemId = this.$mem.state.gridStackSelectItemId;
-            let customPros = _customProperties.get(_gridStackSelectItemId);
+            let customPros = this.getCustomPros();
             if (customPros) {
                 customPros.interval = _interval;
                 customPros.direction = _direction;
@@ -86,12 +124,23 @@ export default {
                 //     "interval": _interval,
                 // });
             }
-
-            console.log(_customProperties.get(_gridStackSelectItemId));
+            // console.log(_customProperties.get(_gridStackSelectItemId));
         },
         showImages: function () {
             this.$refs.modalImageSelect.setItem();
             $('#modal-imageselect').modal('show');
+
+            let _this = this;
+            $('#modal-imageselect').on('hidden.bs.modal', function (e) {
+                let customPros = _this.getCustomPros();
+                let _images = customPros.images;
+                if (_images) {
+                    _this.selectedImages = _images;
+                } else {
+                    _this.selectedImages = [];
+                }
+            });
+
         }
     }
 }

@@ -59,7 +59,10 @@
 export default {
     data: function () {
         return {
-            itemData: {},
+            itemData: {
+                brand:'',
+                model:'',
+            },
         }
     },
     mounted() {
