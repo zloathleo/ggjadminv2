@@ -25,6 +25,13 @@ if (_user) {
 } else {
     window.location.href = "login.html";
 }
+
+//验证用户信息
+Axios.get('/account/info').then(function (response) { 
+}).catch(function (error) {
+    window.location.href = "login.html";
+});
+
 //toastr 配置
 toastr.options.closeButton = true;
 toastr.options.positionClass = "toast-top-center";
@@ -55,15 +62,14 @@ window.gridStackSelectItemCallback = function (_name) {
 window.gridStackRemoveItemCallback = function (_itemId) {
     event.stopPropagation();
     event.preventDefault();
-    let _target = window.event.target; 
+    let _target = window.event.target;
 
     // let _dom = _target.parentNode.parentNode.parentNode.parentNode;
-    let _dom = $("#pn-" + _itemId); 
+    let _dom = $("#pn-" + _itemId);
     vueEventHub.$emit('gridStackRemoveItem', {
         dom: _dom,
         itemId: _itemId,
     });
-
 
 }
 
