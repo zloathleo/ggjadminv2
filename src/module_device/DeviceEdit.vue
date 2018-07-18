@@ -69,7 +69,11 @@ export default {
         setItem: function (_item) {
             let _this = this;
 
-            this.$axios.get('/devices/' + _item.label).then(function (response) {
+            this.$axios.get('/devices/' + _item.label, {
+                params: {
+                    'time': new Date().getTime()
+                }
+            }).then(function (response) {
                 let _data = response.data;
                 _this.itemData = _data;
             }).catch(function (error) {

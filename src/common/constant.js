@@ -24,6 +24,11 @@ export default {
 
     parseError: function (error) {
         if (error && error.response && error.response.data && error.response.data.message) {
+            if (error.response.data.err == -5) {
+                setTimeout(function () {
+                    window.location.href = "login.html";
+                }, 1500);
+            }
             return error.response.data.message;
         }
         return error;

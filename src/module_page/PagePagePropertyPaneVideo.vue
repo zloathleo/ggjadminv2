@@ -100,7 +100,7 @@ export default {
             } else {
             }
 
-            console.log(_customProperties.get(_gridStackSelectItemId));
+            // console.log(_customProperties.get(_gridStackSelectItemId));
 
         },
         showVideo: function () {

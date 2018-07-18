@@ -55,11 +55,10 @@ window.gridStackSelectItemCallback = function (_name) {
 window.gridStackRemoveItemCallback = function (_itemId) {
     event.stopPropagation();
     event.preventDefault();
-    let _target = window.event.target;
-    console.log(_target);
+    let _target = window.event.target; 
 
-    let _dom = _target.parentNode.parentNode.parentNode.parentNode;
-    console.log("remove gridStack item:" + _itemId);
+    // let _dom = _target.parentNode.parentNode.parentNode.parentNode;
+    let _dom = $("#pn-" + _itemId); 
     vueEventHub.$emit('gridStackRemoveItem', {
         dom: _dom,
         itemId: _itemId,

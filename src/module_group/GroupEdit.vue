@@ -96,21 +96,30 @@ export default {
         setItem: function (_item) {
             let _this = this;
 
-            this.$axios.get('/groups/' + _item.label).then(function (response) {
+            this.$axios.get('/groups/' + _item.label, {
+                params: {
+                    'time': new Date().getTime()
+                }
+            }).then(function (response) {
                 let _data = response.data;
                 _this.itemData = _data;
 
                 _this.$axios.get('/users', {
                     params: {
-                        filtergroup: true
+                        filtergroup: true,
+                        'time': new Date().getTime()
                     }
                 }).then(function (response) {
-                    let _data = response.data;
-                    if (_data) { 
+                    let _data = response.data; 
+                    if (_data) {
                         _this.tableData = _data.rows;
-                        _this.tableData.push({
-                            "name": _this.itemData.user
-                        }); 
+
+                        if (_this.itemData.user) {
+                            _this.tableData.push({
+                                "name": _this.itemData.user
+                            });
+                        }
+
                     }
                 }).catch(function (error) {
                     console.error(error);

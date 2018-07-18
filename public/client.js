@@ -100,19 +100,7 @@ var _parseVideoPlayer = function (gridstack, item) {
     } else if (item.video) {
         var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
         var _dom = '<video style="background-color: #000000;" controls="controls" loop="loop" muted="muted" autoplay="autoplay" ' +
-            'width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>';
-
-        // var _dom = `
-        // <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
-        //     <param name="movie" value="vgaplayer.swf" />
-        //     <param name="FlashVars" :value="url=`+_videoUrl+`" />
-        //     <param name="play" value="true">
-        //     <param name="loop" value="true">
-        //     <param name="bgcolor" value="#ffffff">
-        //     <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
-        //         allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=`+_videoUrl+`" pluginspage="https://get.adobe.com/cn/flashplayer/" />
-        // </object>
-        // `;
+            'width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>'; 
 
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
@@ -171,13 +159,11 @@ var _parseTextLoop = function (gridstack, item) {
         var newsHtml = "";
         _textList.forEach(function (_text, _index) {
             newsHtml = newsHtml + "<li class='news-item' style='color:#fff'>" + _text + "</li>";
-        });
-
+        }); 
 
         var _dom = '<ul class="news" style="overflowY:hidden;height:`+ _height + `;padding: 20px;">' + newsHtml + '</ul>';
         gridstack.addWidget($(_dom),
-            item.x, item.y, item.width, item.height, false);
-
+            item.x, item.y, item.width, item.height, false); 
     } else {
 
     }

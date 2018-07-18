@@ -40,7 +40,7 @@
                             <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除 </button>
                         </td>
                         <td class="text-center">
-                            <button v-if="item.active != true" class="btn btn-xs btn-warning" type="button" v-on:click="publicItem(item)">激活 </button>
+                            <button v-if="item.active != true" class="btn btn-xs btn-warning" type="button" v-on:click="publicItem(item)">点击激活 </button>
                             <span v-if="item.active == true" class="label label-success">已激活</span>
                         </td>
                     </tr>

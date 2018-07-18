@@ -19,7 +19,7 @@
                     <a class="img-container" data-fancybox="gallery" :href="$axios.defaults.baseURL + 'ggmanager_resources/' + $mem.state.user.group + '/' + item.name">
                         <!-- <img src="small_1.jpg"> -->
                         <img class="img-responsive" :src="$axios.defaults.baseURL + 'ggmanager_resources/' + $mem.state.user.group + '/'+ item.thumbnail" alt="">
-                        <div class="push-5" style="text-align: center;font-size: 6px;">{{item.label}}</div>
+                        <div class="push-5" style="text-align: center;font-size: 10px;">{{item.label}}</div>
                         </img>
 
                         <div class="img-options">

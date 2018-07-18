@@ -159,15 +159,17 @@ export default {
             _this.itemSelectChange(data);
         });
         this.$eventHub.$on('gridStackRemoveItem', function (data) {
+            // console.log("eventHub gridStackRemoveItem");
+            console.log(data.dom);
+            var gridstack = $('#pageCreater').data('gridstack');
+            gridstack.removeWidget(data.dom);
+
             this.$mem.commit("removeGridStackItemCustomProperties", data.itemId);
 
             this.$mem.commit("clearGridStackItemSelected");
             if (this.$refs.pagePagePropertyPane) {
                 this.$refs.pagePagePropertyPane.reload();
             }
-
-            var gridstack = $('#pageCreater').data('gridstack');
-            gridstack.removeWidget(data.dom);
         });
     },
     methods: {
@@ -234,7 +236,7 @@ export default {
             });
         },
         renderVideoPlayer: function (_id) {
-            return '<div data-type="videoplayer" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
+            return '<div data-type="videoplayer" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
@@ -242,7 +244,7 @@ export default {
         },
 
         renderImageloop: function (_id) {
-            return '<div data-type="imageloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
+            return '<div data-type="imageloop" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
@@ -250,7 +252,7 @@ export default {
         },
 
         renderTextloop: function (_id) {
-            return '<div data-type="textloop" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="1">'
+            return '<div data-type="textloop" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="1">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content" >'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
