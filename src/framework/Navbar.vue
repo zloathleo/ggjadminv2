@@ -33,6 +33,9 @@
                         <i class="fa fa-ellipsis-v"></i>
                     </button>
                 </li>
+                <li style="margin-top: 5px;">
+                    {{$mem.state.user.name}},你好
+                </li>
             </ul>
             <!-- END Header Navigation Left -->
         </header>

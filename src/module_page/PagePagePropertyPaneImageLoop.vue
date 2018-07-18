@@ -12,13 +12,13 @@
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">宽度</label>
             <div class="col-xs-8">
-                <input ref="inputId" class="form-control" type="text" :value="getWidthValue()" disabled="disabled">
+                <input class="form-control" type="text" :value="getWidthValue()" disabled="disabled">
             </div>
         </div>
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">高度</label>
             <div class="col-xs-8">
-                <input ref="inputId" class="form-control" type="text" :value="getHeightValue()" disabled="disabled">
+                <input class="form-control" type="text" :value="getHeightValue()" disabled="disabled">
             </div>
         </div>
 

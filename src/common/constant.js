@@ -21,7 +21,7 @@ export default {
         }
         return uuid.join('');
     },
-    
+
     parseError: function (error) {
         if (error && error.response && error.response.data && error.response.data.message) {
             return error.response.data.message;
@@ -95,5 +95,6 @@ export default {
         }
         this.download_file.src = this.serverPath + url;
         this.download_file.style.display = "none";
-    }
+    },
+
 }

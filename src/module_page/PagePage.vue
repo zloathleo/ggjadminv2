@@ -51,7 +51,7 @@
 </template>
 
 <script>     
-
+import Storejs from 'store';
 import PageDelete from './PageDelete.vue';
 export default {
     components: { PageDelete },
@@ -68,10 +68,11 @@ export default {
         this.$eventHub.$on('pages.updated', function (data) {
             setTimeout(function () { location.reload(); }, 500);
         });
-        this.$axios.get('/account/info').then(function (response) { 
+        this.$axios.get('/account/info').then(function (response) {
             let _info = response.data.group;
+            Storejs.set("group", _info);
             _this.$mem.state.groupInfo.width = _info.width;
-            _this.$mem.state.groupInfo.height = _info.height;  
+            _this.$mem.state.groupInfo.height = _info.height;
         }).catch(function (error) {
             toastr.error("获取初始化数据异常 [" + _this.$constant.parseError(error) + "]");
         });

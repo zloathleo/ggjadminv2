@@ -40,7 +40,7 @@ export default {
     document.onkeydown = function (e) {
       var theEvent = window.event || e;
       var code = theEvent.keyCode || theEvent.which;
-      console.log(code);
+      // console.log(code);
       if (code == 13) {
         let _button = _this.$refs.loginSubmit;
         // console.log(_button);
@@ -72,7 +72,7 @@ export default {
           Storejs.set("user", res.data);
           setTimeout(function () {
             window.location.href = "index.html";
-          }, 1000);  
+          }, 500);  
 
         }).catch(function (error) {
           // toastr.error("登录异常 [" + error + "]");

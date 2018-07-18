@@ -120,7 +120,7 @@ export default {
             let _this = this;
             this.$axios.post('messages/' + _label + '/update', params).then(function (response) {
                 toastr.success("修改消息成功");
-                _this.$eventHub.$emit('messages.updated');
+                // _this.$eventHub.$emit('messages.updated');
             }).catch(function (error) {
                 toastr.error("修改数据异常 [" + _this.$constant.parseError(error) + "]");
             });

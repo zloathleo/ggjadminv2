@@ -4,7 +4,7 @@
 
         <!-- center -->
         <div class="col-sm-8">
-            <div class="block">
+            <div class="block" style="padding: 30px;margin-bottom: 0px;">
                 <PageSave ref="modalSave" />
 
                 <div class="block-header">
@@ -25,7 +25,7 @@
                     <h3 class="block-title">{{initPageData.name ? initPageData.name :'新页面' }} - 布局</h3>
                 </div>
 
-                <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 20px',width: maxWidth + 'px', height: (maxHeight - 93) + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
+                <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 20px',width: maxWidth + 'px', height:  maxHeight  + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
                     <div id="pageCreater" class="grid-stack" />
                 </div>
             </div>
@@ -42,13 +42,13 @@
                         <div class="form-group">
                             <label class="col-xs-4 control-label" for="example-masked-date1">宽度</label>
                             <div class="col-xs-8">
-                                <input ref="inputId" class="form-control" type="text" :value="$mem.state.groupInfo.width" disabled="disabled">
+                                <input ref="inputId" class="form-control" type="text" :value="orWidth" disabled="disabled">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-xs-4 control-label" for="example-masked-date1">高度</label>
                             <div class="col-xs-8">
-                                <input ref="inputId" class="form-control" type="text" :value="$mem.state.groupInfo.height" disabled="disabled">
+                                <input ref="inputId" class="form-control" type="text" :value="orHeight" disabled="disabled">
                             </div>
                         </div>
                     </form>
@@ -60,24 +60,68 @@
 </template>
 
 <script>     
+import Storejs from 'store';
 import PagePagePropertyPane from './PagePagePropertyPane.vue';
 import PageSave from './PageSave.vue';
 export default {
     components: { PagePagePropertyPane, PageSave },
     data: function () {
-        let _targetWidth = this.$mem.state.groupInfo.width;
-        let _targetHeight = this.$mem.state.groupInfo.height;
+        let _group = Storejs.get("group");
+        if (_group) {
+            let _targetWidth = _group.width;
+            let _targetHeight = _group.height;
 
-        let _windowHeight = document.body.clientHeight - 140;
-        let _windowWidth = parseInt(_windowHeight * _targetWidth / _targetHeight);
+            let _windowWidth = Math.floor((document.body.clientWidth - 230) * 0.666 - 120);
+            let _windowHeight = document.body.clientHeight - 230;
 
-        console.log(_windowWidth + "::" + _windowHeight);
 
-        return {
-            initPageData: {},
-            maxWidth: _windowWidth,
-            maxHeight: _windowHeight,
+            let showWidth = _windowWidth;
+            let showHeight = _windowHeight;
+            let _targetP = _targetWidth / _targetHeight;
+            if (_targetP > 2) {
+                _targetP = 2;
+            } else if (_targetP < 0.5) {
+                _targetP = 0.5;
+            }
+            if (_targetP >= 1) {
+                //横长方形
+                showWidth = _windowWidth;
+                showHeight = Math.floor(showWidth / _targetP);
+                // showHeight = Math.floor(_windowHeight / _gw);
+
+            } else {
+                //竖长方形
+                showHeight = _windowHeight;
+                showWidth = Math.floor(showHeight * _targetP);
+            }
+
+            console.log(showWidth + "::" + showHeight);
+            return {
+                initPageData: {},
+                orWidth: _targetWidth,
+                orHeight: _targetHeight,
+                maxWidth: showWidth,
+                maxHeight: showHeight,
+            }
+        } else {
+            let _targetWidth = _group.width;
+            let _targetHeight = _group.height;
+
+            let _windowWidth = Math.floor((document.body.clientWidth - 230) * 0.666 - 120);
+            let _windowHeight = document.body.clientHeight - 230;
+
+            let showWidth = parseInt(_windowWidth * 0.667);
+            let showHeight = parseInt(_windowHeight * 0.667);
+
+            return {
+                initPageData: {},
+                orWidth: _targetWidth,
+                orHeight: _targetHeight,
+                maxWidth: showWidth,
+                maxHeight: showHeight,
+            }
         }
+
     },
     beforeCreate() {
         this.$mem.commit("changeGridStackItemSelected", {
@@ -87,8 +131,20 @@ export default {
         });
 
         this.$mem.commit("cleanGridStackItemCustomProperties");
+
+
     },
     mounted() {
+        let _this = this;
+        this.$axios.get('/account/info').then(function (response) {
+            let _info = response.data.group;
+            Storejs.set("group", _info);
+            _this.$mem.state.groupInfo.width = _info.width;
+            _this.$mem.state.groupInfo.height = _info.height;
+        }).catch(function (error) {
+            toastr.error("获取初始化数据异常 [" + _this.$constant.parseError(error) + "]");
+        });
+
         this.initGridStack();
 
         let _label = this.$route.params.label;
@@ -98,7 +154,7 @@ export default {
         }
 
         console.log("init page creater");
-        let _this = this;
+
         this.$eventHub.$on('gridStackSelectItemChange', function (data) {
             _this.itemSelectChange(data);
         });
@@ -215,7 +271,7 @@ export default {
             let _customProperties = this.$mem.state.gridStackAllItemCustomProperties;
             let _pros = _customProperties.get(_id);
             _pros.width = parseInt(_width);
-            _pros.height = parseInt(_height); 
+            _pros.height = parseInt(_height);
 
             if (this.$refs.pagePagePropertyPane) {
                 this.$refs.pagePagePropertyPane.reload();
@@ -232,7 +288,7 @@ export default {
                 height: _h,
                 width: _w,
                 // minWidth: this.maxWidth,
-                cellHeight: Math.floor(this.maxHeight / 10) - 10,
+                cellHeight: Math.floor(this.maxHeight / 10) - 1,
                 verticalMargin: "1px",
                 // disableOneColumnMode :false,
             };
@@ -271,6 +327,8 @@ export default {
                 this.initPageData.content = _json;
                 this.$refs.modalSave.setItem(this.initPageData);
                 $('#modal-pagesave').modal('show');
+            } else {
+                toastr.error("页面内容为空无法保存");
             }
         },
 
@@ -294,6 +352,7 @@ export default {
 
             this.$mem.commit("appendGridStackItemCustomProperties", {
                 "id": _id,
+                "interval": 3,
                 "width": 2,
                 "height": 2,
             });

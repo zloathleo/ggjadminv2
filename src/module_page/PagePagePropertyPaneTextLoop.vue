@@ -10,20 +10,20 @@
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">宽度</label>
             <div class="col-xs-8">
-                <input ref="inputId" class="form-control" type="text" :value="getWidthValue()" disabled="disabled">
+                <input class="form-control" type="text" :value="getWidthValue()" disabled="disabled">
             </div>
         </div>
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">高度</label>
             <div class="col-xs-8">
-                <input ref="inputId" class="form-control" type="text" :value="getHeightValue()" disabled="disabled">
+                <input class="form-control" type="text" :value="getHeightValue()" disabled="disabled">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-xs-4 control-label" for="example-masked-date1">文字内容</label>
             <div class="col-xs-8">
-                <textarea ref="inputTexts" class="form-control" rows="5" placeholder="滚动文字">{{texts}}</textarea>
+                <textarea ref="inputTexts" class="form-control" rows="5" placeholder="滚动文字" :value="texts"> </textarea>
             </div>
         </div>
     </form>
@@ -37,7 +37,7 @@ export default {
         let cusPros = this.$mem.state.gridStackAllItemCustomProperties.get(_elementId);
         let _texts = '';
         if (cusPros) {
-            _texts = cusPros.texts;
+            _texts = cusPros.texts ? cusPros.texts : '';
         }
         return {
             elementId: _elementId,
@@ -68,14 +68,12 @@ export default {
         },
 
         save: function () {
-            let id = this.$refs.inputId.value;
             let texts = this.$refs.inputTexts.value;
-
-            this.$mem.commit("appendGridStackItemCustomProperties", {
-                "id": id,
-                "texts": texts,
-            });
-            console.log("id:" + id);
+            let customPros = this.getCustomPros();
+            if (customPros) {
+                customPros.texts = texts;
+            }
+            
         }
     }
 }

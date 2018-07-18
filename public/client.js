@@ -8,38 +8,77 @@ var _baseURL = 'http://116.62.150.38:8080/ggmanager/api/';
 var _cellHeight = Math.floor(document.body.clientHeight / 10);
 var _cellWidth = Math.floor(document.body.clientWidth / 10);
 var _groupLabel = undefined;
+var _videoCameraIndex = 0;
+
+var myBrowser = function () {
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (isOpera) {
+        return "Opera"
+    }; //判断是否Opera浏览器
+    if (userAgent.indexOf("Firefox") > -1) {
+        return "FF";
+    } //判断是否Firefox浏览器
+    if (userAgent.indexOf("Chrome") > -1) {
+        return "Chrome";
+    }
+    if (userAgent.indexOf("Safari") > -1) {
+        return "Safari";
+    } //判断是否Safari浏览器
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        return "IE";
+    }; //判断是否IE浏览器
+    if (userAgent.indexOf("Trident") > -1) {
+        return "Edge";
+    } //判断是否Edge浏览器
+}();
+
+var generateIeFlashVideo = function (item) {
+    var _requestVideoUrl = '';
+    if (item.camera === true) {
+        _requestVideoUrl = "rtmp://116.62.150.38:1935/live/" + _groupLabel;
+    } else if (item.video) {
+        _requestVideoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
+    }
+    return '<object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-44455354000 ' + _videoCameraIndex + '"  width="100%" :height="100%">' +
+        '<param name="movie" value="vgaplayer.swf" />' +
+        '<param name="FlashVars" value="url=' + _requestVideoUrl + '" />' +
+        '<param name="play" value="true">' +
+        '<param name="loop" value="true">' +
+        '<param name="bgcolor" value="#ffffff">' +
+        '<embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" ' +
+        'allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=' + _requestVideoUrl + '" pluginspage="https://get.adobe.com/cn/flashplayer/" />'
+    '</object>';
+}
 
 var _parseVideoPlayer = function (gridstack, item) {
+    _videoCameraIndex = _videoCameraIndex + 2;
+
+    if (myBrowser === "IE" || myBrowser === "Edge") {
+        var _dom = generateIeFlashVideo(item);
+        gridstack.addWidget($(_dom),
+            item.x, item.y, item.width, item.height, false);
+        return;
+    }
     if (item.camera === true) {
         var _videoUrl = "http://116.62.150.38:7001/live/" + _groupLabel + ".flv";
         console.log(_videoUrl);
-        var _dom = `
-          <video id="video1" class="video-js vjs-default-skin" width="640" height="480" data-setup='{"controls" : true, "autoplay" : true, "preload" : "auto"}'>
-             <source src="`+ _videoUrl + `" type="video/x-flv">
-            </video>  
-            `;
+        let _videoID = "video" + _videoCameraIndex;
+        var _dom = '<video id="' + _videoID + '" class="video-js vjs-default-skin" width="640" height="480" muted="muted"' +
+            ' data-setup="{ "controls": true, "autoplay": true, "preload": "auto"}" >' +
+            '<source src="' + _videoUrl + '" type="video/x-flv"></video>';
 
-        // var _dom = `
-        // <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
-        //     <param name="movie" value="vgaplayer.swf" />
-        //     <param name="FlashVars" :value="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" />
-        //     <param name="play" value="true">
-        //     <param name="loop" value="true">
-        //     <param name="bgcolor" value="#ffffff">
-        //     <embed src="vgaplayer.swf" width="100%" height="100%" allowScriptAccess="sameDomain" loop="true" bgcolor="#ffffff" 
-        //         allowFullScreen="true" type="application/x-shockwave-flash" FlashVars="url=rtmp://116.62.150.38:1935/live/`+ _groupLabel + `" pluginspage="https://get.adobe.com/cn/flashplayer/" />
-        // </object>
-        // `;
+
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
 
         setTimeout(function () {
-            var videoElement = document.getElementById("video1");
+            var videoElement = document.getElementById(_videoID);
             if (flvjs.isSupported() && videoElement) {
                 var _player = flvjs.createPlayer({
                     type: 'flv',
                     isLive: true,//<====加个这个 
-                    // hasAudio: false,
+                    hasAudio: false,
                     enableWorker: true,
                     autoCleanupSourceBuffer: true,//对SourceBuffer进行自动清理
                     // autoCleanupMaxBackwardDuration: 60,//当后向缓冲区持续时间超过此值（以秒为单位）时，为SourceBuffer执行自动清理
@@ -60,12 +99,8 @@ var _parseVideoPlayer = function (gridstack, item) {
 
     } else if (item.video) {
         var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
-        var _dom = `
-        <video style="background-color: #000000;" controls="controls" loop="loop" muted="muted" autoplay="autoplay" 
-        width="100%" height="100%" src="`+ _videoUrl + `">
-            浏览器不支持
-        </video>
-        `;
+        var _dom = '<video style="background-color: #000000;" controls="controls" loop="loop" muted="muted" autoplay="autoplay" ' +
+            'width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>';
 
         // var _dom = `
         // <object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" :height="100%">
@@ -85,7 +120,7 @@ var _parseVideoPlayer = function (gridstack, item) {
 }
 
 var _parseImageLoop = function (gridstack, item) {
-    let _images = item.images;
+    var _images = item.images;
 
     if (!_images || _images.length == 0) return;
     var _baseUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
@@ -108,28 +143,21 @@ var _parseImageLoop = function (gridstack, item) {
         }
     });
     console.log(indicatorsHtml);
-    var _dom = `
-    <div  >
-        <div id="carousel-example-generic" style='width: 100%; height: 100%;'   class="carousel slide carousel-vertical" data-ride="carousel">
-            <ol class="carousel-indicators">
-               `
-        + indicatorsHtml +
-        `
-            </ol>
-            <div class="carousel-inner" role="listbox" style='width: 100%; height: 100%;'> 
-                `
-        + itemHtml +
-        `
-            </div>
-        </div>
-    </div>
-    `;
+    var _dom =
+        '<div>' +
+        '<div id="carousel-example-generic" style="width: 100%; height: 100%;"  class="carousel slide carousel-vertical" data-ride="carousel">' +
+        '<ol class="carousel-indicators">' + indicatorsHtml +
+        '</ol>' +
+        '<div class="carousel-inner" role="listbox" style="width: 100%; height: 100%;">' + itemHtml +
+        '</div>' +
+        '</div>' +
+        '</div>';
     gridstack.addWidget($(_dom),
         item.x, item.y, item.width, item.height, false);
 
     setTimeout(function () {
         $('.carousel').carousel({
-            interval: item.interval * 1000
+            interval: (item.interval ? item.interval : 3) * 1000
         })
     }, 2000);
 
@@ -146,11 +174,7 @@ var _parseTextLoop = function (gridstack, item) {
         });
 
 
-        var _dom = `
-        <ul class="news" style="overflowY:hidden;height:`+ _height + `;padding: 20px;">
-                `+ newsHtml + `
-        </ul>
-        `;
+        var _dom = '<ul class="news" style="overflowY:hidden;height:`+ _height + `;padding: 20px;">' + newsHtml + '</ul>';
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
 
@@ -161,6 +185,10 @@ var _parseTextLoop = function (gridstack, item) {
 
 var parsePageJson = function (_content) {
 
+    if (!_content || _content.length < 5) {
+        document.getElementById("info").textContent = "页面未设计";
+        return;
+    }
     var _json = JSON.parse(_content);
 
     var _h = 10;
@@ -184,7 +212,9 @@ var parsePageJson = function (_content) {
 
     var items = GridStackUI.Utils.sort(_json);
     console.log(items);
+    if (!items || items.length == 0) {
 
+    }
 
     items.forEach(function (item) {
         if (item.type == "videoplayer") {
@@ -204,11 +234,11 @@ var _page = this.getUrlParam("page");
 
 var initPage = function () {
     if (_group) {
-        let _response = $.ajax({ url: _baseURL + 'group/' + _group, async: false });
+        _groupLabel = _group;
+        var _response = $.ajax({ url: _baseURL + 'group/' + _group, async: false });
         if (_response) {
             var _json = _response.responseJSON;
             console.log(_json);
-            _groupLabel = _json.group;
             var _content = _json.content;
             _lastJsonUpdateTime = _json.updateTime;
             parsePageJson(_content);
@@ -244,7 +274,7 @@ var _checkPage = function () {
     }
 
     if (_group) {
-        let _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel, async: false });
+        var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel, async: false });
         if (_response) {
             var _json = _response.responseJSON;
             if (_json.updateTime !== _lastJsonUpdateTime) {
