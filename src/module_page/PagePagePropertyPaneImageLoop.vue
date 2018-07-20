@@ -89,7 +89,7 @@ export default {
         getHeightValue: function () {
             let customPros = this.getCustomPros();
             if (customPros.height) {
-                return parseInt(customPros.height / 10 * this.$mem.state.groupInfo.height);
+                return parseInt(customPros.height / 20 * this.$mem.state.groupInfo.height);
             } else {
                 return 0;
             }

@@ -231,12 +231,13 @@ export default {
                         "texts": item.texts,
                         "width": item.width,
                         "height": item.height,
+                        "fontSize": item.fontSize,
                     });
                 }
             });
         },
         renderVideoPlayer: function (_id) {
-            return '<div data-type="videoplayer" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
+            return '<div data-type="videoplayer" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="4">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
@@ -244,7 +245,7 @@ export default {
         },
 
         renderImageloop: function (_id) {
-            return '<div data-type="imageloop" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
+            return '<div data-type="imageloop" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="4">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
@@ -252,7 +253,7 @@ export default {
         },
 
         renderTextloop: function (_id) {
-            return '<div data-type="textloop" id="pn-' + _id +'" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="1">'
+            return '<div data-type="textloop" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content" >'
                 + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
@@ -281,8 +282,10 @@ export default {
         },
 
         initGridStack: function () {
-            let _h = 10;
+            let _h = 20;
             let _w = 12;
+            // let _h = 20;
+            // let _w = 12;
 
             var options = {
                 float: true,
@@ -290,7 +293,7 @@ export default {
                 height: _h,
                 width: _w,
                 // minWidth: this.maxWidth,
-                cellHeight: Math.floor(this.maxHeight / 10) - 1,
+                cellHeight: Math.floor(this.maxHeight / _h) - 1,
                 verticalMargin: "1px",
                 // disableOneColumnMode :false,
             };
@@ -338,37 +341,38 @@ export default {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($(this.renderVideoPlayer(_id)),
-                0, 0, 2, 2, true);
+                0, 0, 2, 4, true);
 
             this.$mem.commit("appendGridStackItemCustomProperties", {
                 "id": _id,
                 "width": 2,
-                "height": 2,
+                "height": 4,
             });
         },
         addImageLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($(this.renderImageloop(_id)),
-                0, 0, 2, 2, true);
+                0, 0, 2, 4, true);
 
             this.$mem.commit("appendGridStackItemCustomProperties", {
                 "id": _id,
                 "interval": 3,
                 "width": 2,
-                "height": 2,
+                "height": 4,
             });
         },
         addTextLoop: function () {
             var gridstack = $('#pageCreater').data('gridstack');
             let _id = this.$constant.uuid(8, 16);
             gridstack.addWidget($(this.renderTextloop(_id)),
-                0, 0, 2, 1, true);
+                0, 0, 2, 2, true);
 
             this.$mem.commit("appendGridStackItemCustomProperties", {
                 "id": _id,
                 "width": 2,
-                "height": 1,
+                "height": 2,
+                "fontSize": 14,
             });
         },
     }

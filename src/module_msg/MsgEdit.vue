@@ -32,7 +32,7 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input class="js-maxlength form-control" type="text" maxlength="20" v-model="itemData.name">
+                                    <input class="js-maxlength form-control" type="text" maxlength="500" v-model="itemData.name">
                                 </div>
                             </div>
 

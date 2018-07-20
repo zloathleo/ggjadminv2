@@ -26,6 +26,13 @@
                 <textarea ref="inputTexts" class="form-control" rows="5" placeholder="滚动文字" :value="texts"> </textarea>
             </div>
         </div>
+
+        <div class="form-group">
+            <label class="col-xs-4 control-label" for="example-masked-date1">文字大小</label>
+            <div class="col-xs-8">
+                <input ref="inputFontSize" class="form-control" type="text" :value="getFontSizeValue()" >
+            </div>
+        </div>
     </form>
 </template>
 
@@ -61,19 +68,29 @@ export default {
         getHeightValue: function () {
             let customPros = this.getCustomPros();
             if (customPros.height) {
-                return parseInt(customPros.height / 10 * this.$mem.state.groupInfo.height);
+                return parseInt(customPros.height / 20 * this.$mem.state.groupInfo.height);
             } else {
                 return 0;
+            }
+        },
+        getFontSizeValue: function () {
+            let customPros = this.getCustomPros();
+            if (customPros.fontSize) {
+                return customPros.fontSize;
+            } else {
+                return 12;
             }
         },
 
         save: function () {
             let texts = this.$refs.inputTexts.value;
+            let fontSize = this.$refs.inputFontSize.value;
             let customPros = this.getCustomPros();
             if (customPros) {
                 customPros.texts = texts;
+                customPros.fontSize = parseInt(fontSize);
             }
-            
+
         }
     }
 }

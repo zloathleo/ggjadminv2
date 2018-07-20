@@ -5,8 +5,8 @@ var getUrlParam = function (name) {
 };
 
 var _baseURL = 'http://116.62.150.38:8080/ggmanager/api/';
-var _cellHeight = Math.floor(document.body.clientHeight / 10);
-var _cellWidth = Math.floor(document.body.clientWidth / 10);
+var _cellHeight = Math.floor(document.body.clientHeight / 20);
+var _cellWidth = Math.floor(document.body.clientWidth / 12);
 var _groupLabel = undefined;
 var _videoCameraIndex = 0;
 
@@ -60,14 +60,17 @@ var _parseVideoPlayer = function (gridstack, item) {
             item.x, item.y, item.width, item.height, false);
         return;
     }
+    var _muted = ' muted="muted" ';
+    if (myBrowser === "Firefox") {
+        _muted = '';
+    }
     if (item.camera === true) {
         var _videoUrl = "http://116.62.150.38:7001/live/" + _groupLabel + ".flv";
-        console.log(_videoUrl);
-        let _videoID = "video" + _videoCameraIndex;
-        var _dom = '<video id="' + _videoID + '" class="video-js vjs-default-skin" width="640" height="480" muted="muted"' +
+
+        var _videoID = "video" + _videoCameraIndex;
+        var _dom = '<video id="' + _videoID + '" class="video-js vjs-default-skin" width="100%" height="100%" controls="controls" autoplay="autoplay" ' + _muted +
             ' data-setup="{ "controls": true, "autoplay": true, "preload": "auto"}" >' +
             '<source src="' + _videoUrl + '" type="video/x-flv"></video>';
-
 
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
@@ -92,15 +95,15 @@ var _parseVideoPlayer = function (gridstack, item) {
                 setTimeout(function () {
                     console.log(_player);
                     _player.play();
-                }, 1500);
+                }, 500);
 
             }
         }, 1500);
 
     } else if (item.video) {
         var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
-        var _dom = '<video style="background-color: #000000;" controls="controls" loop="loop" muted="muted" autoplay="autoplay" ' +
-            'width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>'; 
+        var _dom = '<video style="background-color: #000000;" muted="muted" loop="loop" controls="controls" autoplay="autoplay" ' + _muted
+            ' width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>';
 
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
@@ -159,11 +162,16 @@ var _parseTextLoop = function (gridstack, item) {
         var newsHtml = "";
         _textList.forEach(function (_text, _index) {
             newsHtml = newsHtml + "<li class='news-item' style='color:#fff'>" + _text + "</li>";
-        }); 
+        });
 
-        var _dom = '<ul class="news" style="overflowY:hidden;height:`+ _height + `;padding: 20px;">' + newsHtml + '</ul>';
+        var _fontSize = item.fontSize;
+        if (_fontSize === undefined) {
+            _fontSize = 14;
+        }
+
+        var _dom = '<ul class="news" style="font-size:' + _fontSize + 'px;overflow-y:hidden;height:' + _height + ';padding: 20px;">' + newsHtml + '</ul>';
         gridstack.addWidget($(_dom),
-            item.x, item.y, item.width, item.height, false); 
+            item.x, item.y, item.width, item.height, false);
     } else {
 
     }
