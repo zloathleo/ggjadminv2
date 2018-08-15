@@ -22,7 +22,7 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
-                                    <input class="btn btn-sm btn-default" type="file" maxlength="20" v-on:change="fileChanged">
+                                    <input class="btn btn-sm btn-default" type="file" accept=".png,.jpg,.mp4" maxlength="80" v-on:change="fileChanged">
                                 </div>
                             </div>
 

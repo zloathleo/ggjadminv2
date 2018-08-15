@@ -47,7 +47,7 @@
         .servermsg {
             white-space: nowrap;
             display: block;
-            width: 100%;
+            min-width: 100%;
             text-align: left;
             position: absolute;
             overflow: hidden;
@@ -68,30 +68,15 @@
 
         @keyframes servermsg {
             0% {
-                transform: translateX(-90%);
-            }
-            100% {
                 transform: translateX(100%);
             }
+            100% {
+                transform: translateX(-90%);
+            }
         }
 
-        .carousel-vertical .carousel-inner .carousel-item-next.carousel-item-left,
-        .carousel-vertical .carousel-inner .carousel-item-prev.carousel-item-right {
-            -webkit-transform: translateY(0);
-            transform: translateY(0);
-        }
 
-        .carousel-vertical .carousel-inner .active.carousel-item-left,
-        .carousel-vertical .carousel-inner .carousel-item-prev {
-            -webkit-transform: translateY(-90%);
-            transform: translateY(-9%);
-        }
 
-        .carousel-vertical .carousel-inner .active.carousel-item-right,
-        .carousel-vertical .carousel-inner .carousel-item-next {
-            -webkit-transform: translateY(100%);
-            transform: translateY(100%);
-        }
 
         .grid-stack {
             background: #000;
@@ -101,6 +86,51 @@
             color: #000;
             text-align: center;
             background-color: #000;
+        }
+
+
+
+
+
+        .vertical .carousel-inner {
+            height: 100%;
+        }
+
+        .carousel.vertical .item {
+            -webkit-transition: 0.6s ease-in-out top;
+            -moz-transition: 0.6s ease-in-out top;
+            -ms-transition: 0.6s ease-in-out top;
+            -o-transition: 0.6s ease-in-out top;
+            transition: 0.6s ease-in-out top;
+        }
+
+        .carousel.vertical .active {
+            top: 0;
+        }
+
+        .carousel.vertical .next {
+            top: 100%;
+        }
+
+        .carousel.vertical .prev {
+            top: -100%;
+        }
+
+        .carousel.vertical .next.left,
+        .carousel.vertical .prev.right {
+            top: 0;
+        }
+
+        .carousel.vertical .active.left {
+            top: -100%;
+        }
+
+        .carousel.vertical .active.right {
+            top: 100%;
+        }
+
+        .carousel.vertical .item {
+            left: 0;
         }
     </style>
 
@@ -114,7 +144,10 @@
         <h4 id="info" class="info"></h4>
 
         <div class="servermsg">
-            <h4 id="message" style="font-weight: bold;"></h4>
+            <h4 id="message" style="font-weight: bold;font-size: 4rem"></h4>
+            <audio id="audiomessage-player" style="display: none" controls="controls" autoplay="autoplay" loop="loop">
+                <source id="audiomessage-source" src="" type="audio/mpeg">
+            </audio>
         </div>
     </div>
 
@@ -131,7 +164,7 @@
     <!-- 组件拖拽编辑 gridstack -->
 
     <script src="assets/plugins/flv.js/dist/flv.min.js"></script>
-
+    <script src="NodePlayer.js"></script>
     <!-- <script type="text/javascript" src="assets/plugins/jquery.bootstrap.newsbox.js"></script> -->
 
     <script type="text/javascript" src="client.js"></script>

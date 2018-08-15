@@ -5,13 +5,21 @@ var getUrlParam = function (name) {
 };
 
 var _baseURL = 'http://116.62.150.38:8080/ggmanager/api/';
-var _cellHeight = Math.floor(document.body.clientHeight / 20);
+var _cellHeight = Math.floor(document.body.clientHeight / 30);
 var _cellWidth = Math.floor(document.body.clientWidth / 12);
 var _groupLabel = undefined;
 var _videoCameraIndex = 0;
 
 var myBrowser = function () {
     var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    if (userAgent.indexOf("MQQBrowser") > -1) {
+        return "MQQBrowser";
+    } //判断是否MQQBrowser浏览器
+
+    if (userAgent.indexOf("Safari") > -1) {
+        return "Safari";
+    } //判断是否Safari浏览器
+
     var isOpera = userAgent.indexOf("Opera") > -1;
     if (isOpera) {
         return "Opera"
@@ -30,7 +38,7 @@ var myBrowser = function () {
     }; //判断是否IE浏览器
     if (userAgent.indexOf("Trident") > -1) {
         return "Edge";
-    } //判断是否Edge浏览器
+    } //判断是否Edge浏览器 
 }();
 
 var generateIeFlashVideo = function (item) {
@@ -51,17 +59,52 @@ var generateIeFlashVideo = function (item) {
     '</object>';
 }
 
+var generateIeCanvasVideo = function (item, _videoID) {
+    var _height = (item.height * _cellHeight) + "px";
+    var _weight = (item.width * _cellWidth) + "px";
+    return '<canvas id="' + _videoID + '" width=' + _weight + ' height=' + _height + '></canvas>';
+}
+
 var _parseVideoPlayer = function (gridstack, item) {
     _videoCameraIndex = _videoCameraIndex + 2;
 
+    //IE处理Flash
     if (myBrowser === "IE" || myBrowser === "Edge") {
         var _dom = generateIeFlashVideo(item);
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
         return;
     }
+    //QQ手机浏览器或者Safari
+    if (myBrowser === "MQQBrowser" || myBrowser === "Safari") {
+        var _videoID = "video" + _videoCameraIndex;
+
+        var _dom = generateIeCanvasVideo(item, _videoID);
+        gridstack.addWidget($(_dom),
+            item.x, item.y, item.width, item.height, false);
+
+        var np = new Module.NodePlayer();
+        Module.print = (text) => {
+        };
+        np.on('start', () => {
+            Module.print('NodePlayer on start');
+        });
+        np.on('close', () => {
+            Module.print('NodePlayer on close');
+        });
+        np.on('error', (err) => {
+            Module.print('NodePlayer on error', err);
+        });
+        np.setPlayView(_videoID);
+        np.setScaleMode(1);
+        np.enableVideo(true);
+        np.enableAudio(true);
+        np.start("ws://116.62.150.38:8090/live/" + _groupLabel + ".flv");
+        return;
+    }
+
     var _muted = ' muted="muted" ';
-    if (myBrowser === "Firefox") {
+    if (myBrowser === "Firefox" || myBrowser === "FF") {
         _muted = '';
     }
     if (item.camera === true) {
@@ -81,7 +124,7 @@ var _parseVideoPlayer = function (gridstack, item) {
                 var _player = flvjs.createPlayer({
                     type: 'flv',
                     isLive: true,//<====加个这个 
-                    hasAudio: false,
+                    hasAudio: true,
                     enableWorker: true,
                     autoCleanupSourceBuffer: true,//对SourceBuffer进行自动清理
                     // autoCleanupMaxBackwardDuration: 60,//当后向缓冲区持续时间超过此值（以秒为单位）时，为SourceBuffer执行自动清理
@@ -102,7 +145,7 @@ var _parseVideoPlayer = function (gridstack, item) {
 
     } else if (item.video) {
         var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
-        var _dom = '<video style="background-color: #000000;" muted="muted" loop="loop" controls="controls" autoplay="autoplay" ' + _muted
+        var _dom = '<video style="background-color: #000000;"  loop="loop" controls="controls" autoplay="autoplay" ' + _muted +
             ' width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>';
 
         gridstack.addWidget($(_dom),
@@ -134,9 +177,15 @@ var _parseImageLoop = function (gridstack, item) {
         }
     });
     console.log(indicatorsHtml);
+
+    var _class = "";
+    if (item.direction === "v") {
+        _class = "vertical";
+    }
+
     var _dom =
         '<div>' +
-        '<div id="carousel-example-generic" style="width: 100%; height: 100%;"  class="carousel slide carousel-vertical" data-ride="carousel">' +
+        '<div id="carousel-example-generic" style="width: 100%; height: 100%;"  class="carousel slide ' + _class + ' " data-ride="carousel">' +
         '<ol class="carousel-indicators">' + indicatorsHtml +
         '</ol>' +
         '<div class="carousel-inner" role="listbox" style="width: 100%; height: 100%;">' + itemHtml +
@@ -253,17 +302,51 @@ var initPage = function () {
     }
 }
 
+var handleMessage = function (_message) {
+    var _messageType = _message.type;
+    var content = _message.name;
+
+    if (_messageType === 'audio') {
+        var _audioUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + content;
+        document.getElementById("audiomessage-source").src = _audioUrl;
+
+        document.getElementById("audiomessage-player").load();
+        setTimeout(function () {
+            document.getElementById("audiomessage-player").play();
+        }, 2000);
+    } else if (_messageType === 'text') {
+        document.getElementById("message").textContent = content;
+        var _servermsg = document.getElementById("message");
+        _servermsg.style.setProperty("width", content.length * 44 + "px");
+    }
+}
+
+var _lastMessage = undefined;
 var _checkPage = function () {
     var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel + "/messages", async: false });
     if (_response) {
         var _json = _response.responseJSON;
         var _rows = _json.rows;
-        if (_rows && _rows.length > 0) {
-            var _message = _rows[0];
-            var content = _message.name;
-            document.getElementById("message").textContent = content;
+        if (_rows) {
+            if (JSON.stringify(_lastMessage) == JSON.stringify(_rows)) {
+                console.log("信息未改变");
+                return;
+            }
+            document.getElementById("message").textContent = "";
+            document.getElementById("audiomessage-source").src = "";
+            if (_rows.length == 1) {
+                var _message = _rows[0];
+                handleMessage(_message);
+            } else if (_rows.length == 2) {
+                var _message1 = _rows[0];
+                handleMessage(_message1);
+                var _message2 = _rows[1];
+                handleMessage(_message2);
+            }
+            _lastMessage = _rows;
         } else {
             document.getElementById("message").textContent = "";
+            document.getElementById("audiomessage-source").src = "";
         }
     }
 

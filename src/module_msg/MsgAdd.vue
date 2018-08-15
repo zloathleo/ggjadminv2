@@ -22,12 +22,21 @@
                                 <div class="col-xs-6">
                                     <select class="form-control" v-model="itemData.type">
                                         <option value='text'>文字</option>
-                                        <option value='sound'>语音</option>
+                                        <option value='audio'>语音</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div v-if="itemData.type === 'audio'" class="form-group">
+                                <label class="col-xs-4 control-label" for="val-skill">语音文件上传
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-xs-6">
+                                    <input class="btn btn-sm btn-default" type="file" accept=".mp3" maxlength="500" v-on:change="fileChanged">
+                                </div>
+                            </div>
+
+                            <div v-if="itemData.type === 'text'" class="form-group">
                                 <label class="col-xs-4 control-label">消息内容
                                     <span class="text-danger">*</span>
                                 </label>
@@ -37,8 +46,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">生效时间 </label>
-                                <div class="col-xs-6"> 
+                                <label class="col-xs-4 control-label">生效时间
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-xs-6">
                                     <div class="js-datetimepicker input-group date">
                                         <input id="inputStartTime" class="form-control" type="text" placeholder="选择生效时间..">
                                         <span class="input-group-addon">
@@ -50,8 +61,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">结束时间 </label>
-                                <div class="col-xs-6"> 
+                                <label class="col-xs-4 control-label">结束时间
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-xs-6">
                                     <div class="js-datetimepicker input-group date">
                                         <input id="inputEndTime" class="form-control" type="text" placeholder="选择结束时间..">
                                         <span class="input-group-addon">
@@ -91,30 +104,49 @@ export default {
     methods: {
         setItem: function () {
         },
+        fileChanged: function (evt) {
+            this.itemData.selectedFile = evt.target.files[0];
+        },
         ok: function () {
             let _name = this.itemData.name;
-
             var stime = $("#inputStartTime").val();
-            var etime = $("#inputEndTime").val(); 
-            if (_name && !_name.isBlank()) {
-                _name = _name.trim();
+            var etime = $("#inputEndTime").val();
 
-                var params = new URLSearchParams();
-                params.append('type', this.itemData.type);
-                params.append('name', _name);
-                params.append('startTime', stime);
-                params.append('endTime', etime);
-
-                let _this = this;
-                this.$axios.post('messages/add', params).then(function (response) {
-                    toastr.success("添加消息成功");
-                    _this.$eventHub.$emit('messages.updated');
-                }).catch(function (error) {
-                    toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
-                });
-            } else {
+            if (this.itemData.type === 'text' && (!_name || _name.isBlank())) {
                 toastr.error("消息内容不合法或为空");
+                return;
+            } else if (this.itemData.type === 'audio' && (!this.itemData.selectedFile)) {
+                toastr.error("消息文件为空");
+                return;
             }
+            if (!stime) {
+                toastr.error("消息起始时间为空");
+                return;
+            }
+            if (!etime) {
+                toastr.error("消息结束时间为空");
+                return;
+            }
+
+            var form = new FormData()
+            form.append('type', this.itemData.type);
+            if (this.itemData.type === 'audio') {
+                form.append('file', this.itemData.selectedFile);
+            } else {
+                _name = _name.trim();
+                form.append('name', _name);
+            }
+            form.append('startTime', stime);
+            form.append('endTime', etime);
+
+            let _this = this;
+            this.$axios.post('messages/add', form).then(function (response) {
+                toastr.success("添加消息成功");
+                _this.$eventHub.$emit('messages.updated');
+            }).catch(function (error) {
+                toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
+            });
+
         }
 
     }

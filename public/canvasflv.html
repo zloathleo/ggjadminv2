@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+  <style>
+    #url {
+      width: 350px;
+    }
+
+    #log {
+      width: 640px;
+      height: 200px;
+      margin-top: 10px;
+      border-left: 0px;
+      border-right: 0px;
+      padding-left: 0px;
+      padding-right: 0px;
+      display: block;
+      background-color: black;
+      color: white;
+      font-size: medium;
+      font-family: 'Lucida Console', Monaco, monospace;
+      outline: none;
+    }
+  </style>
+</head>
+<script src="NodePlayer.js"></script>
+<script>
+  window.onload = function () {
+    var np = new Module.NodePlayer();
+    Module.print = (text) => {
+    };
+    np.on('start', () => {
+      Module.print('NodePlayer on start');
+    });
+    np.on('close', () => {
+      Module.print('NodePlayer on close');
+    });
+    np.on('error', (err) => {
+      Module.print('NodePlayer on error', err);
+    });
+
+
+    np.setPlayView('video');
+    np.setScaleMode(1);
+    np.enableVideo(true);
+    np.enableAudio(true);
+    np.start("ws://116.62.150.38:8090/live/D0B570AE.flv");
+
+
+  };
+
+</script>
+
+<body>
+  <div>
+    <canvas id="video" width=640 height=480></canvas>
+  </div>
+</body>
+
+</html>

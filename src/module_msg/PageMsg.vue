@@ -30,7 +30,7 @@
                 <tbody>
                     <tr v-for="(item, index) in tableData">
                         <td class="text-center">{{index + 1}}</td>
-                        <td class="text-center">{{item.type === 'sound' ? '语音' :'文字'}}</td>
+                        <td class="text-center">{{item.type === 'audio' ? '语音' :'文字'}}</td>
                         <td class="text-center">{{item.name}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.startTime)}}</td>
                         <td class="text-center">{{$constant.parseDateTime(item.endTime)}}</td>

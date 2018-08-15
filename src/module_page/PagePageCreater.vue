@@ -25,7 +25,7 @@
                     <h3 class="block-title">{{initPageData.name ? initPageData.name :'新页面' }} - 布局</h3>
                 </div>
 
-                <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 20px',width: maxWidth + 'px', height:  maxHeight  + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
+                <div class="block-content" :style="{ backgroundColor:'rgb(250, 250, 210)', padding:'0px 0px 0px',width: maxWidth + 'px', height:  maxHeight  + 'px',  maxWidth: maxWidth + 'px', maxHeight: maxHeight + 'px' }">
                     <div id="pageCreater" class="grid-stack" />
                 </div>
             </div>
@@ -282,7 +282,7 @@ export default {
         },
 
         initGridStack: function () {
-            let _h = 20;
+            let _h = 30;
             let _w = 12;
             // let _h = 20;
             // let _w = 12;
@@ -293,7 +293,7 @@ export default {
                 height: _h,
                 width: _w,
                 // minWidth: this.maxWidth,
-                cellHeight: Math.floor(this.maxHeight / _h) - 1,
+                cellHeight: Math.floor(this.maxHeight / _h) ,
                 verticalMargin: "1px",
                 // disableOneColumnMode :false,
             };

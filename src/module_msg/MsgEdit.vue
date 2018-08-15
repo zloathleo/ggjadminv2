@@ -20,14 +20,23 @@
                             <div class="form-group">
                                 <label class="col-xs-4 control-label" for="val-skill">消息类型</label>
                                 <div class="col-xs-6">
-                                    <select class="form-control" v-model="itemData.type">
+                                    <select class="form-control" v-model="itemData.type" disabled>
                                         <option value='text'>文字</option>
-                                        <option value='sound'>语音</option>
+                                        <option value='audio'>语音</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div v-if="itemData.type === 'audio'" class="form-group">
+                                <label class="col-xs-4 control-label" for="val-skill">语音文件
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="100" v-model="itemData.name" readonly>
+                                </div>
+                            </div>
+
+                            <div v-if="itemData.type === 'text'" class="form-group">
                                 <label class="col-xs-4 control-label">消息内容
                                     <span class="text-danger">*</span>
                                 </label>
@@ -37,7 +46,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">生效时间 </label>
+                                <label class="col-xs-4 control-label">生效时间
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <div class="js-datetimepicker js-datetimepicker-edit-start input-group date">
                                         <input id="inputStartTime2" class="form-control" :value="$constant.parseDateTime(itemData.startTime)" type="text" placeholder="选择生效时间..">
@@ -50,7 +61,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">结束时间 </label>
+                                <label class="col-xs-4 control-label">结束时间
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-xs-6">
                                     <div class="js-datetimepicker input-group date">
                                         <input id="inputEndTime2" class="form-control" :value="$constant.parseDateTime(itemData.endTime)" type="text" placeholder="选择结束时间..">
@@ -108,21 +121,21 @@ export default {
             let _name = this.itemData.name;
             let _type = this.itemData.type;
 
-            // let _inputStartTime = this.$refs.inputStartTime.value; 
-            // let _inputEndTime = this.$refs.inputEndTime.value;
-
-
             var stime = $("#inputStartTime2").val();
             var etime = $("#inputEndTime2").val();
 
-            var params = new URLSearchParams();
-            params.append('name', _name);
-            params.append('type', _type);
-            params.append('startTime', stime);
-            params.append('endTime', etime);
+            var form = new FormData()
+            form.append('type', this.itemData.type);
+            if (this.itemData.type === 'audio') {
+            
+            } else {
+                form.append('name', _name);
+            }
+            form.append('startTime', stime);
+            form.append('endTime', etime);
 
             let _this = this;
-            this.$axios.post('messages/' + _label + '/update', params).then(function (response) {
+            this.$axios.post('messages/' + _label + '/update', form).then(function (response) {
                 toastr.success("修改消息成功");
                 _this.$eventHub.$emit('messages.updated');
             }).catch(function (error) {
