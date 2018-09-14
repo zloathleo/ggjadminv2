@@ -57,7 +57,7 @@ export default {
         let _this = this;
         this.$axios.get('resources', {
             params: {
-                type: "img"
+                type: "pic"
             }
         }).then(function (response) {
             let _data = response.data;

@@ -74,7 +74,7 @@ export default {
         exportLive: function () {
             let _url = 'live/export?accessToken=' + this.$mem.state.user.token;
             if (this.myBrowser() === "IE" || this.myBrowser() === "Edge") {
-                var oPop = window.open("http://116.62.150.38:8080/ggmanager/" + _url, "", "width=1, height=1, top=5000, left=5000");
+                var oPop = window.open("http://124.47.22.86:8080/ggmanager/" + _url, "", "width=1, height=1, top=5000, left=5000");
                 for (; oPop.document.readyState != "complete";) {
                     if (oPop.document.readyState == "complete") break;
                 }

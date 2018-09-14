@@ -1,6 +1,6 @@
 <template>
     <div class="block">
-        <ResourceAdd ref="modalAdd" />
+        <QrCodeAdd ref="modalAdd" />
         <div class="block-header">
             <div class="block-options-simple">
                 <button type="button" class="btn btn-minw btn-primary" v-on:click="addItem">
@@ -10,7 +10,7 @@
                     <i class="fa fa-refresh"></i> 刷新 </button>
 
             </div>
-            <h3 class="block-title">资源管理</h3>
+            <h3 class="block-title">二维码管理</h3>
         </div>
 
         <div class="block-content">
@@ -36,9 +36,9 @@
 </template>
 
 <script>     
-import ResourceAdd from './ResourceAdd.vue';
+import QrCodeAdd from './QrCodeAdd.vue';
 export default {
-    components: { ResourceAdd },
+    components: { QrCodeAdd },
     data: function () {
         return {
             tableData: [],
@@ -55,7 +55,7 @@ export default {
         initData: function () {
             let _this = this;
             this.$axios.get('resources', {
-                　　params: { 'type': 'media' }
+                params: { 'type': 'qr' }
             }).then(function (response) {
                 let _data = response.data;
                 if (_data) {

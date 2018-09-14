@@ -16,7 +16,7 @@ var myBrowser = function () {
         return "MQQBrowser";
     } //判断是否MQQBrowser浏览器
 
-    if (userAgent.indexOf("Safari") > -1) {
+    if (userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Mobile") > -1) {
         return "Safari";
     } //判断是否Safari浏览器
 
@@ -84,15 +84,15 @@ var _parseVideoPlayer = function (gridstack, item) {
             item.x, item.y, item.width, item.height, false);
 
         var np = new Module.NodePlayer();
-        Module.print = (text) => {
+        Module.print = function (text) {
         };
-        np.on('start', () => {
+        np.on('start', function () {
             Module.print('NodePlayer on start');
         });
-        np.on('close', () => {
+        np.on('close', function () {
             Module.print('NodePlayer on close');
         });
-        np.on('error', (err) => {
+        np.on('error', function (err) {
             Module.print('NodePlayer on error', err);
         });
         np.setPlayView(_videoID);
@@ -323,6 +323,7 @@ var handleMessage = function (_message) {
 
 var _lastMessage = undefined;
 var _checkPage = function () {
+    console.log("_checkPage");
     var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel + "/messages", async: false });
     if (_response) {
         var _json = _response.responseJSON;
@@ -330,26 +331,27 @@ var _checkPage = function () {
         if (_rows) {
             if (JSON.stringify(_lastMessage) == JSON.stringify(_rows)) {
                 console.log("信息未改变");
-                return;
+            } else {
+                document.getElementById("message").textContent = "";
+                document.getElementById("audiomessage-source").src = "";
+                if (_rows.length == 1) {
+                    var _message = _rows[0];
+                    handleMessage(_message);
+                } else if (_rows.length == 2) {
+                    var _message1 = _rows[0];
+                    handleMessage(_message1);
+                    var _message2 = _rows[1];
+                    handleMessage(_message2);
+                }
+                _lastMessage = _rows;
             }
-            document.getElementById("message").textContent = "";
-            document.getElementById("audiomessage-source").src = "";
-            if (_rows.length == 1) {
-                var _message = _rows[0];
-                handleMessage(_message);
-            } else if (_rows.length == 2) {
-                var _message1 = _rows[0];
-                handleMessage(_message1);
-                var _message2 = _rows[1];
-                handleMessage(_message2);
-            }
-            _lastMessage = _rows;
         } else {
             document.getElementById("message").textContent = "";
             document.getElementById("audiomessage-source").src = "";
         }
     }
 
+    console.log("_group:", _group);
     if (_group) {
         var _response = $.ajax({ url: _baseURL + 'group/' + _groupLabel, async: false });
         if (_response) {

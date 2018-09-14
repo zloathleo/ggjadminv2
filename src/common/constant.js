@@ -1,5 +1,5 @@
 export default {
-    serverPath: "http://116.62.150.38:8080/ggmanager/",
+    serverPath: "http://124.47.22.86:8080/ggmanager/",
 
     uuid: function (len, radix) {
         var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');

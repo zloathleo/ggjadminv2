@@ -51,6 +51,12 @@
                             </a>
                         </li>
                         <li class="cursor-pointer">
+                            <a v-bind:class="{ active: isActive('page_qrcode') }" v-on:click="clickItem('page_qrcode')">
+                                <i class="si si-bulb"></i>
+                                <span class="sidebar-mini-hide">二维码管理</span>
+                            </a>
+                        </li>
+                        <li class="cursor-pointer">
                             <a v-bind:class="{ active: isActive('page_msg') }" v-on:click="clickItem('page_msg')">
                                 <i class="si si-bubbles"></i>
                                 <span class="sidebar-mini-hide">消息管理</span>
