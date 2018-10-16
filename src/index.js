@@ -27,7 +27,7 @@ if (_user) {
 }
 
 //验证用户信息
-Axios.get('/account/info').then(function (response) { 
+Axios.get('/account/info').then(function (response) {
 }).catch(function (error) {
     window.location.href = "login.html";
 });
@@ -44,10 +44,16 @@ var _closePage = function () {
 
 //事件配置
 var vueEventHub = new Vue();
-window.gridStackSelectItemCallback = function (_name) {
-    event.stopPropagation();
-    event.preventDefault();
-    let _target = window.event.target;
+window.gridStackSelectItemCallback = function (_name,_evt) {
+    var _event = window.event || _evt;
+    if (_event.stopPropagation) {
+        _event.stopPropagation();
+    }
+    if (_event.preventDefault) {
+        _event.preventDefault();
+    }
+
+    let _target = _event.target;
     console.log(_target);
 
     let _dom = _target.parentNode.parentNode;

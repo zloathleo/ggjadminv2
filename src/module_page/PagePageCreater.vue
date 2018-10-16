@@ -239,7 +239,7 @@ export default {
         renderVideoPlayer: function (_id) {
             return '<div data-type="videoplayer" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="4">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
-                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1)">视'
+                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(1,event)">视'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
                 + '\')"><i class="si si-close"></i></button></label></div></div>'
         },
@@ -247,7 +247,7 @@ export default {
         renderImageloop: function (_id) {
             return '<div data-type="imageloop" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="4">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content">'
-                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4)">图'
+                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(4,event)">图'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
                 + '\')"><i class="si si-close"></i></button></label></div></div>'
         },
@@ -255,7 +255,7 @@ export default {
         renderTextloop: function (_id) {
             return '<div data-type="textloop" id="pn-' + _id + '" data-id="' + _id + '" data-gs-min-width="2" data-gs-min-height="2">'
                 + '<div style="left:1px;right:0px;" class="grid-stack-item-content" >'
-                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5)">文'
+                + '<label class="btn  btn-primary grid-stack-item-content-button" onclick="gridStackSelectItemCallback(5,event)">文'
                 + '<button class="gridstack-item-deletebutton" onclick="gridStackRemoveItemCallback(\'' + _id
                 + '\')"><i class="si si-close"></i></button></label></div></div>'
         },

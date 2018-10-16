@@ -5,9 +5,9 @@
         </div>
 
         <div class="block-content">
-            <a :href="'client.html?group=' + $mem.state.user.group" target="_blank">
+            <a :href="'http://www.akpxx.com/server/client.html?group=' + $mem.state.user.group" target="_blank">
                 <div class="content-mini content-mini-full bg-warning" style="color:white;font-weight: bolder;font-size: 1.6rem;">
-                    {{'http://124.47.22.86:8080/server/' + 'client.html?group=' + $mem.state.user.group}}
+                    {{'http://www.akpxx.com/server/' + 'client.html?group=' + $mem.state.user.group}}
                 </div>
             </a>
         </div>

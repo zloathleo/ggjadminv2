@@ -35,7 +35,7 @@
                             <button class="btn btn-xs btn-primary" type="button" v-on:click="editItem(item)">更新布局 </button>
                         </td>
                         <td class="text-center">
-                            <a v-if="item.label" class="btn btn-xs btn-primary" type="button" :href="'client.html?page=' + item.label" target="_blank">预览
+                            <a v-if="item.label" class="btn btn-xs btn-primary" type="button" :href="'http://www.akpxx.com/server/client.html?page=' + item.label" target="_blank">预览
                             </a>
                             <button class="btn btn-xs btn-danger" type="button" v-on:click="deleteItem(item)">删除 </button>
                         </td>

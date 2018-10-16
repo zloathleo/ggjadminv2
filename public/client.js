@@ -4,6 +4,12 @@ var getUrlParam = function (name) {
     if (r != null) return unescape(r[2]); return null; //返回参数值
 };
 
+var players = [] ;
+var topClick = function(){
+    var player = players[0];
+    player.enableAudio(true);
+}
+
 var _ip = "124.47.22.86";
 
 var _baseURL = 'http://' + _ip + ':8080/ggmanager/api/';
@@ -68,7 +74,7 @@ var generateIeFlashVideo = function (item) {
 var generateIeCanvasVideo = function (item, _videoID) {
     var _height = (item.height * _cellHeight) + "px";
     var _weight = (item.width * _cellWidth) + "px";
-    return '<canvas id="' + _videoID + '" width=' + _weight + ' height=' + _height + '></canvas>';
+    return '<canvas onclick="topClick()" id="' + _videoID + '" width=' + _weight + ' height=' + _height + '></canvas>';
 }
 
 var _parseVideoPlayer = function (gridstack, item) {
@@ -82,7 +88,7 @@ var _parseVideoPlayer = function (gridstack, item) {
         return;
     }
     //QQ手机浏览器或者Safari
-    if (myBrowser === "WXBrowser" || myBrowser === "MQQBrowser" || myBrowser === "Safari") {
+    if (myBrowser === "WXBrowser" || myBrowser === "MQQBrowser" || myBrowser === "Safari" || myBrowser === "Chrome") {
         var _videoID = "video" + _videoCameraIndex;
 
         var _dom = generateIeCanvasVideo(item, _videoID);
@@ -90,10 +96,19 @@ var _parseVideoPlayer = function (gridstack, item) {
             item.x, item.y, item.width, item.height, false);
  
         var player = new NodePlayer();
+        players[players.length] = player;
         player.setView(_videoID);
         player.setBufferTime(500);
         player.setScaleMode(0);
         player.skipLoopFilter(32);
+          /**
+         * 打开音频
+         * 一个页面可以创建多个播放实例,但只能有一个实例播放音频
+         * 默认都为关闭
+         * 当开启一个音频时,若一个实例已打开,需先关闭
+         * iOS的safari浏览器及webview控件,iOS微信内,需要给一个触摸事件才能解锁音频 
+         */
+        player.enableAudio(true);
         player.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv");
 
         // var np = new Module.NodePlayer();

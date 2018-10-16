@@ -18,11 +18,19 @@
                         <form class="form-horizontal">
 
                             <div class="form-group">
-                                <label class="col-xs-4 control-label">文件
+                                <label class="col-xs-4 control-label">文件(最大100M)
                                     <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-xs-6">
                                     <input class="btn btn-sm btn-default" type="file" accept=".png,.jpg,.mp4" maxlength="80" v-on:change="fileChanged">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">资源链接
+                                </label>
+                                <div class="col-xs-6">
+                                    <input class="js-maxlength form-control" type="text" maxlength="120" v-model="itemData.url">
                                 </div>
                             </div>
 
@@ -70,20 +78,25 @@ export default {
         ok: function () {
             let _selectedFile = this.selectedFile;
 
-            if (_selectedFile) { 
+            if (_selectedFile) {
+                let filesize = _selectedFile.size / 1024;
+                if (filesize > 1023) {
+                    toastr.error("选择的文件太大,超过100M");
+                } else {
+                    var form = new FormData()
+                    form.append('file', _selectedFile);
+                    form.append('des', this.itemData.des ? this.itemData.des : '')
+                    form.append('url', this.itemData.url ? this.itemData.url : '')
 
-                var form = new FormData()
-                form.append('file', _selectedFile);
-                form.append('des', this.itemData.des ? this.itemData.des : '')
+                    let _this = this;
+                    this.$axios.post('resources/add', form).then(function (response) {
+                        toastr.success("添加资源成功");
+                        _this.$eventHub.$emit('resources.updated');
+                    }).catch(function (error) {
+                        toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
+                    });
+                }
 
-
-                let _this = this;
-                this.$axios.post('resources/add', form).then(function (response) {
-                    toastr.success("添加资源成功");
-                    _this.$eventHub.$emit('resources.updated');
-                }).catch(function (error) {
-                    toastr.error("添加数据异常 [" + _this.$constant.parseError(error) + "]");
-                });
             } else {
                 toastr.error("请选择文件");
             }
