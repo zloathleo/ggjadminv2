@@ -4,7 +4,9 @@ var getUrlParam = function (name) {
     if (r != null) return unescape(r[2]); return null; //返回参数值
 };
 
-var _baseURL = 'http://116.62.150.38:8080/ggmanager/api/';
+var _ip = "124.47.22.86";
+
+var _baseURL = 'http://' + _ip + ':8080/ggmanager/api/';
 var _cellHeight = Math.floor(document.body.clientHeight / 30);
 var _cellWidth = Math.floor(document.body.clientWidth / 12);
 var _groupLabel = undefined;
@@ -12,6 +14,10 @@ var _videoCameraIndex = 0;
 
 var myBrowser = function () {
     var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    if (userAgent.toLowerCase().indexOf("micromessenger") > -1) {
+        return "WXBrowser";
+    } //判断是否WXBrowser浏览器 
+
     if (userAgent.indexOf("MQQBrowser") > -1) {
         return "MQQBrowser";
     } //判断是否MQQBrowser浏览器
@@ -44,9 +50,9 @@ var myBrowser = function () {
 var generateIeFlashVideo = function (item) {
     var _requestVideoUrl = '';
     if (item.camera === true) {
-        _requestVideoUrl = "rtmp://116.62.150.38:1935/live/" + _groupLabel;
+        _requestVideoUrl = "rtmp://" + _ip + ":1935/live/" + _groupLabel;
     } else if (item.video) {
-        _requestVideoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
+        _requestVideoUrl = "http://" + _ip + ":8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
     }
     return '<object v-if="flashShow" classid="clsid:D27CDB6E-AE6D-11cf-96B8-44455354000 ' + _videoCameraIndex + '"  width="100%" :height="100%">' +
         '<param name="movie" value="vgaplayer.swf" />' +
@@ -76,30 +82,37 @@ var _parseVideoPlayer = function (gridstack, item) {
         return;
     }
     //QQ手机浏览器或者Safari
-    if (myBrowser === "MQQBrowser" || myBrowser === "Safari") {
+    if (myBrowser === "WXBrowser" || myBrowser === "MQQBrowser" || myBrowser === "Safari") {
         var _videoID = "video" + _videoCameraIndex;
 
         var _dom = generateIeCanvasVideo(item, _videoID);
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
+ 
+        var player = new NodePlayer();
+        player.setView(_videoID);
+        player.setBufferTime(500);
+        player.setScaleMode(0);
+        player.skipLoopFilter(32);
+        player.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv");
 
-        var np = new Module.NodePlayer();
-        Module.print = function (text) {
-        };
-        np.on('start', function () {
-            Module.print('NodePlayer on start');
-        });
-        np.on('close', function () {
-            Module.print('NodePlayer on close');
-        });
-        np.on('error', function (err) {
-            Module.print('NodePlayer on error', err);
-        });
-        np.setPlayView(_videoID);
-        np.setScaleMode(1);
-        np.enableVideo(true);
-        np.enableAudio(true);
-        np.start("ws://116.62.150.38:8090/live/" + _groupLabel + ".flv");
+        // var np = new Module.NodePlayer();
+        // Module.print = function (text) {
+        // };
+        // np.on('start', function () {
+        //     Module.print('NodePlayer on start');
+        // });
+        // np.on('close', function () {
+        //     Module.print('NodePlayer on close');
+        // });
+        // np.on('error', function (err) {
+        //     Module.print('NodePlayer on error', err);
+        // });
+        // np.setPlayView(_videoID);
+        // np.setScaleMode(1);
+        // np.enableVideo(true);
+        // np.enableAudio(true);
+        // np.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv");
         return;
     }
 
@@ -108,7 +121,7 @@ var _parseVideoPlayer = function (gridstack, item) {
         _muted = '';
     }
     if (item.camera === true) {
-        var _videoUrl = "http://116.62.150.38:7001/live/" + _groupLabel + ".flv";
+        var _videoUrl = "http://" + _ip + ":7001/live/" + _groupLabel + ".flv";
 
         var _videoID = "video" + _videoCameraIndex;
         var _dom = '<video id="' + _videoID + '" class="video-js vjs-default-skin" width="100%" height="100%" controls="controls" autoplay="autoplay" ' + _muted +
@@ -144,7 +157,7 @@ var _parseVideoPlayer = function (gridstack, item) {
         }, 1500);
 
     } else if (item.video) {
-        var _videoUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
+        var _videoUrl = "http://" + _ip + ":8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + item.video;
         var _dom = '<video style="background-color: #000000;"  loop="loop" controls="controls" autoplay="autoplay" ' + _muted +
             ' width="100%" height="100%" src="' + _videoUrl + '">浏览器不支持</video>';
 
@@ -157,7 +170,7 @@ var _parseImageLoop = function (gridstack, item) {
     var _images = item.images;
 
     if (!_images || _images.length == 0) return;
-    var _baseUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
+    var _baseUrl = "http://" + _ip + ":8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
 
     var itemHtml = "";
     _images.forEach(function (_image, _index) {
@@ -307,7 +320,7 @@ var handleMessage = function (_message) {
     var content = _message.name;
 
     if (_messageType === 'audio') {
-        var _audioUrl = "http://116.62.150.38:8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + content;
+        var _audioUrl = "http://" + _ip + ":8080/ggmanager/ggmanager_resources/" + _groupLabel + "/" + content;
         document.getElementById("audiomessage-source").src = _audioUrl;
 
         document.getElementById("audiomessage-player").load();

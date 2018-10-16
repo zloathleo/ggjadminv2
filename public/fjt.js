@@ -3,7 +3,7 @@ window.onload = function () {
 }
 
 var _init = function () {
-    var _videoUrl = "http://116.62.150.38:7001/live/7E708B46.flv";
+    var _videoUrl = "http://124.47.22.86:7001/live/7E708B46.flv";
     var videoElement = document.getElementById("videoElement");
     if (flvjs.isSupported() && videoElement) {
         var _player = flvjs.createPlayer({
