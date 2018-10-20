@@ -7,20 +7,6 @@ var App = function () {
     // Helper variables - set in uiInit()
     var $lHtml, $lBody, $lPage, $lSidebar, $lSidebarScroll, $lSideOverlay, $lSideOverlayScroll, $lHeader, $lMain, $lFooter;
 
-    var initTooltip = function () {
-        // Initialize Tooltips
-        jQuery('[data-toggle="tooltip"], .js-tooltip').tooltip({
-            container: 'body',
-            animation: false
-        });
-
-        // Initialize Popovers
-        jQuery('[data-toggle="popover"], .js-popover').popover({
-            container: 'body',
-            animation: true,
-            trigger: 'hover'
-        });
-    }
     // User Interface init
     var uiInit = function () {
         // Set variables
@@ -35,7 +21,18 @@ var App = function () {
         $lMain = jQuery('#main-container');
         $lFooter = jQuery('#page-footer');
 
-        initTooltip();
+        // Initialize Tooltips
+        jQuery('[data-toggle="tooltip"], .js-tooltip').tooltip({
+            container: 'body',
+            animation: false
+        });
+
+        // Initialize Popovers
+        jQuery('[data-toggle="popover"], .js-popover').popover({
+            container: 'body',
+            animation: true,
+            trigger: 'hover'
+        });
 
         // Initialize Tabs
         // jQuery('[data-toggle="tabs"] a, .js-tabs a').click(function (e) {  
@@ -163,8 +160,8 @@ var App = function () {
         jQuery('.js-datetimepicker').each(function () {
             var $input = jQuery(this);
 
-            $input.datetimepicker({
-                format: 'YYYY-MM-DD HH:mm:ss',
+            $input.datetimepicker({ 
+                format: 'YYYY-MM-DD HH:mm:ss', 
                 locale: moment.locale('zh-cn'),
                 showTodayButton: true,
                 showClear: true,
@@ -233,15 +230,11 @@ var App = function () {
             uiNav();
         },
 
-        initTooltip: function () {
-            uiHelperDatetimepicker();
-        },
-
         initDatetimepicker: function ($func) {
             uiHelperDatetimepicker();
         },
 
-        initImagepicker: function () {
+        initImagepicker: function(){
             uiHelperImagepicker();
         },
     };

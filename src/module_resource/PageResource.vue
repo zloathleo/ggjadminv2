@@ -1,6 +1,7 @@
 <template>
     <div class="block">
         <ResourceAdd ref="modalAdd" />
+        <ResourceEdit ref="modalEdit" />
         <ResourceDelete ref="modalDelete" />
         <div class="block-header">
             <div class="block-options-simple">
@@ -26,6 +27,8 @@
                         <div class="img-options">
                             <div class="img-options-content" style="bottom: -10px;top: auto;">
 
+                                <a class="btn btn-xs btn-primary" href="javascript:void(0)" @click="editItem(item,event)">
+                                    <i class="si si-close fa-lg" style=""></i> 编辑</a>
                                 <a class="btn btn-xs btn-danger" href="javascript:void(0)" @click="deleteItem(item,event)">
                                     <i class="si si-close fa-lg" style=""></i> 删除</a>
 
@@ -48,8 +51,9 @@
 <script>     
 import ResourceAdd from './ResourceAdd.vue';
 import ResourceDelete from './ResourceDelete.vue';
+import ResourceEdit from './ResourceEdit.vue';
 export default {
-    components: { ResourceAdd, ResourceDelete },
+    components: { ResourceAdd, ResourceEdit, ResourceDelete },
     data: function () {
         return {
             tableData: [],
@@ -88,7 +92,20 @@ export default {
             this.$refs.modalAdd.setItem();
             $('#modal-item-add').modal('show');
         },
-
+        editItem: function (item, _event) {
+            var _event = window.event || _evt;
+            if (_event.stopPropagation) {
+                _event.stopPropagation();
+            }
+            if (_event.preventDefault) {
+                _event.preventDefault();
+            }
+            this.$refs.modalEdit.setItem({
+                label: item.label,
+                name: item.name,
+            });
+            $('#modal-item-edit').modal('show');
+        },
         deleteItem: function (item, _event) {
             var _event = window.event || _evt;
             if (_event.stopPropagation) {

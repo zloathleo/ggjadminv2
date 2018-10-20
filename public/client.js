@@ -4,8 +4,8 @@ var getUrlParam = function (name) {
     if (r != null) return unescape(r[2]); return null; //返回参数值
 };
 
-var players = [] ;
-var topClick = function(){
+var players = [];
+var topClick = function () {
     var player = players[0];
     player.enableAudio(true);
 }
@@ -78,7 +78,7 @@ var generateIeCanvasVideo = function (item, _videoID) {
 }
 
 var _parseVideoPlayer = function (gridstack, item) {
-    _videoCameraIndex = _videoCameraIndex + 2;
+    _videoCameraIndex = _videoCameraIndex + 1;
 
     //IE处理Flash
     if (myBrowser === "IE" || myBrowser === "Edge") {
@@ -88,46 +88,33 @@ var _parseVideoPlayer = function (gridstack, item) {
         return;
     }
     //QQ手机浏览器或者Safari
-    if (myBrowser === "WXBrowser" || myBrowser === "MQQBrowser" || myBrowser === "Safari" || myBrowser === "Chrome") {
+    if (item.camera === true && (myBrowser === "WXBrowser" || myBrowser === "MQQBrowser" || myBrowser === "Safari" || myBrowser === "Chrome")) {
         var _videoID = "video" + _videoCameraIndex;
 
         var _dom = generateIeCanvasVideo(item, _videoID);
         gridstack.addWidget($(_dom),
             item.x, item.y, item.width, item.height, false);
- 
+
         var player = new NodePlayer();
         players[players.length] = player;
         player.setView(_videoID);
         player.setBufferTime(500);
         player.setScaleMode(0);
         player.skipLoopFilter(32);
-          /**
-         * 打开音频
-         * 一个页面可以创建多个播放实例,但只能有一个实例播放音频
-         * 默认都为关闭
-         * 当开启一个音频时,若一个实例已打开,需先关闭
-         * iOS的safari浏览器及webview控件,iOS微信内,需要给一个触摸事件才能解锁音频 
-         */
-        player.enableAudio(true);
-        player.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv");
+        /**
+       * 打开音频
+       * 一个页面可以创建多个播放实例,但只能有一个实例播放音频
+       * 默认都为关闭
+       * 当开启一个音频时,若一个实例已打开,需先关闭
+       * iOS的safari浏览器及webview控件,iOS微信内,需要给一个触摸事件才能解锁音频 
+       */
+        if (_videoCameraIndex == 1) {
+            player.enableAudio(true);
+        } else {
+            player.enableAudio(false);
+        }
 
-        // var np = new Module.NodePlayer();
-        // Module.print = function (text) {
-        // };
-        // np.on('start', function () {
-        //     Module.print('NodePlayer on start');
-        // });
-        // np.on('close', function () {
-        //     Module.print('NodePlayer on close');
-        // });
-        // np.on('error', function (err) {
-        //     Module.print('NodePlayer on error', err);
-        // });
-        // np.setPlayView(_videoID);
-        // np.setScaleMode(1);
-        // np.enableVideo(true);
-        // np.enableAudio(true);
-        // np.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv");
+        player.start("ws://" + _ip + ":8090/live/" + _groupLabel + ".flv"); 
         return;
     }
 
@@ -185,14 +172,44 @@ var _parseImageLoop = function (gridstack, item) {
     var _images = item.images;
 
     if (!_images || _images.length == 0) return;
+
+
+    var imageUrl = _images.join(",")
+    console.log("imageUrl:", imageUrl);
+    var _imageUrlResponse = $.ajax({ url: "http://" + _ip + ":8080/ggmanager/api/url?name=" + imageUrl, async: false });
+
+    var imageUrlArray = [];
+    if (_imageUrlResponse) {
+        var _json = _imageUrlResponse.responseJSON;
+        imageUrlArray = _json.rows;
+    }
+    console.log("imageUrlArray:", imageUrlArray);
+
     var _baseUrl = "http://" + _ip + ":8080/ggmanager/ggmanager_resources/" + _groupLabel + "/";
 
     var itemHtml = "";
     _images.forEach(function (_image, _index) {
+
+        var _currentImageUrl = undefined;
+        for (var i = 0; i < imageUrlArray.length; i++) {
+            var item = imageUrlArray[i];
+            if (item.name == _image) {
+                _currentImageUrl = item.url;
+            }
+        }
+        // var _currentImageUrl = imageUrlArray[_image];
+        var astart = "";
+        var aend = "";
+        console.log("_currentImageUrl:");
+        if (_currentImageUrl != undefined && _currentImageUrl != "") {
+            astart = "<a href='" + _currentImageUrl + "' >";
+            aend = "</a>"
+        }
+
         if (_index === 0) {
-            itemHtml = itemHtml + "<div class='item active' style='width: 100%; height: 100%;'><img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'> </div>";
+            itemHtml = itemHtml + "<div class='item active' style='width: 100%; height: 100%;'>" + astart + "<img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'>" + aend + " </div>";
         } else {
-            itemHtml = itemHtml + "<div class='item' style='width: 100%; height: 100%;'><img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'> </div>";
+            itemHtml = itemHtml + "<div class='item' style='width: 100%; height: 100%;'>" + astart + "<img style='width: 100%; height: 100%;' src='" + _baseUrl + _image + "'> " + aend + " </div>";
         }
     });
 
@@ -310,6 +327,7 @@ var initPage = function () {
         if (_response) {
             var _json = _response.responseJSON;
             console.log(_json);
+            document.title = _json.name;
             var _content = _json.content;
             _lastJsonUpdateTime = _json.updateTime;
             parsePageJson(_content);
@@ -320,6 +338,7 @@ var initPage = function () {
         if (_response) {
             var _json = _response.responseJSON;
             _groupLabel = _json.group;
+            document.title = _json.name;
             console.log(_json);
             var _content = _json.content;
             _lastJsonUpdateTime = _json.updateTime;

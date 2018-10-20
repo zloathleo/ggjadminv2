@@ -11,7 +11,7 @@ axios.defaults.headers = {
 // axios.defaults.params = {
 //     'time':new Date().getTime()
 // }
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 10000; 
 
 //响应拦截器即异常处理
 axios.interceptors.response.use(function (response) {
